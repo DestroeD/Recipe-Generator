@@ -35,4 +35,24 @@ export default [
       },
     },
   },
+
+  {
+    files: ["cypress/**/*.{js,jsx}"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        cy: true,
+        Cypress: true,
+        describe: true,
+        it: true,
+        before: true,
+        beforeEach: true,
+        after: true,
+        afterEach: true,
+      },
+    },
+  },
 ];
