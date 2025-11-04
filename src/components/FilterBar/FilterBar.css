@@ -1,0 +1,163 @@
+.filter-bar {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  font-family: "Inter", sans-serif;
+}
+
+/* Верхні кнопки */
+.top-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 10px;
+}
+
+.login-btn,
+.create-btn {
+  height: 40px;
+  padding: 0 15px;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.login-btn {
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  color: #333;
+}
+
+.login-btn:hover {
+  background: #f0f0f0;
+}
+
+.create-btn {
+  background: #6DA67A;
+  color: #fff;
+  border: none;
+}
+
+.create-btn:hover {
+  background: #5B8D67;
+}
+
+/* Лінія */
+.divider {
+  border: none;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.08);
+  margin: 16px 0;
+}
+
+/* Фільтри */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 400;
+  color: #222;
+}
+
+.filter-group-time h4 {
+  font-size: 14px;
+  font-weight: 500;
+  color: #222;
+}
+
+.reset {
+  background: none;
+  border: none;
+  color: #6DA67A;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.reset:hover {
+  color: #5B8D67;
+}
+
+/* Групи */
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-group label,
+.filter-group h3 {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+}
+
+.filter-group input[type="text"] {
+  width: 90%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d1d1;
+  background: #fafafa;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.filter-group input[type="text"]:focus {
+  outline: none;
+  border-color: #6DA67A;
+  background: #fff;
+}
+
+.filter-group-time {
+  margin-top: -35px;
+}
+
+/* Час */
+.time-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.time-filters label,
+.vegetarian label {
+  font-size: 14px;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  accent-color: #6DA67A;
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+/* Вегетаріанські страви */
+.vegetarian-divider {
+  border: none;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.06);
+  margin: 10px 0;
+}
+
+.vegetarian {
+  margin-top: -10px;
+}

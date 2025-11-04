@@ -1,0 +1,133 @@
+/* Основний фон сторінки */
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f3f3f3;
+}
+
+/* Біле вікно (модальне) */
+.login-modal {
+  position: relative;
+  background-color: #F4F3F3;
+  width: 90%;
+  max-width: 680px;
+  padding: 40px 32px;
+  border-radius: 27px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  align-items: center;
+}
+
+/* Хрестик у верхньому правому куті */
+.close-btn {
+  position: absolute;
+  top: 5px;
+  right: 9px;
+  background: none;
+  border: none;
+  font-size: 36px;
+  font-weight: 300;
+  color: #9a9a9a;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.1s ease;
+}
+
+.close-btn:hover {
+  color: #000000;
+  transform: scale(1.1);
+}
+
+/* Заголовок */
+.login-title {
+  text-align: center;
+  font-size: 40px;
+  font-weight: 400;
+  margin-bottom: 32px;
+  margin-top: -8px;
+}
+
+/* Поля вводу */
+.login-input {
+  display: block;
+  width: 60%;
+  height: 42px;
+  margin: 16px auto;
+  padding: 0 12px;
+  border: 1.5px solid #cfcfcf;
+  border-radius: 15px;
+  font-size: 15px;
+
+  /* Виправляє темний режим */
+  background-color: transparent;
+  color: #000000;
+  -webkit-text-fill-color: #000;
+  appearance: none;
+}
+
+.login-input::placeholder {
+  color: #000;
+  opacity: 0.5;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #8bb28d;
+  box-shadow: 0 0 0 2px rgba(139, 178, 141, 0.2);
+}
+
+/* Кнопка входу */
+.login-button {
+  display: block;
+  margin: 40px auto 0 auto;
+  width: 50%;
+  height: 44px;
+  background-color: #7fa47f;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.login-button:hover {
+  background-color: #6f956f;
+}
+
+/* Блок з посиланнями */
+.login-links {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.forgot-link {
+  display: inline-block;
+  color: #1a5aff;
+  font-size: 14px;
+  margin-bottom: 8px;
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+.register-text {
+  font-size: 14px;
+  color: #000;
+  margin: 4px 0;
+  font-weight: 600;
+}
+
+.register-link {
+  display: inline-block;
+  color: #1a5aff;
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}

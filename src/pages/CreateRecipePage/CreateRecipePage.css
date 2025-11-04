@@ -1,0 +1,199 @@
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 260px;
+  border-radius: 14px;
+  border: 1.5px dashed #ccc;
+  background: #f5f5ef;
+  text-align: center;
+}
+.upload-placeholder img {
+  width: 48px;
+  height: auto;
+  opacity: 0.6;
+  margin-bottom: 10px;
+  object-fit: contain;
+}
+.upload-placeholder p {
+  font-weight: 600;
+  margin: 4px 0;
+  color: #333;
+}
+.upload-placeholder small {
+  font-size: 12px;
+  color: #777;
+}
+
+/* Інпути для редагування */
+.title-input {
+  width: 90%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #f5f5ef;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.desc-input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #f5f5ef;
+  resize: none;
+  height: 70px;
+  padding: 8px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+/* Права частина з кнопками */
+.right-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.delete-btn,
+.publish-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Видалити */
+.delete-btn {
+  background: #fff;
+  color: #c63c3c;
+  border: 1.5px solid #f0bebe;
+}
+
+.delete-btn:hover {
+  background: #fdecec;
+}
+
+/* Опублікувати */
+.publish-btn {
+  background: #6da67a;
+  color: #fff;
+  border: 1.5px solid #6da67a;
+}
+
+.publish-btn:hover {
+  background: #5b8d67;
+  border-color: #5b8d67;
+}
+
+
+/* Інгредієнти */
+.portion-input,
+.ing-input {
+  width: 30%;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #f5f5ef;
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.ing-input {
+  width: 70%;
+}
+
+.portion-input {
+  margin-left: 10px;
+}
+
+/* Кроки */
+.time-input {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #f5f5ef;
+  padding: 6px 8px;
+  font-size: 14px;
+  width: 120px;
+}
+
+.step-input {
+  width: 90%;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #f5f5ef;
+  padding: 8px;
+  font-size: 14px;
+}
+
+/* Кнопки додати */
+.add-bttn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 16px auto 0;
+  background: none;
+  border: none;
+  color: #1e1e1e;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.add-bttn:hover {
+  color: #6DA67A;
+  transform: scale(1.03);
+}
+
+
+.photo-upload {
+  width: 40%;
+  height: 180px;
+  border: 1.5px dashed #ccc;
+  border-radius: 12px;
+  background: #f5f5ef;
+  margin-top: 20px;
+  margin-bottom: 16px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.photo-upload img {
+  width: 38px;
+  opacity: 0.7;
+  margin-bottom: 6px;
+}
+
+.photo-upload p {
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.photo-upload small {
+  font-size: 12px;
+  color: #777;
+}
+
+.header-grid,
+.content-grid,
+.ingredients,
+.steps {
+  overflow-x: hidden;
+  overflow-y: auto;
+}

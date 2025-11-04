@@ -1,0 +1,342 @@
+.recipepage {
+  background-color: #f3f3f3;
+  min-height: 100vh;
+  padding: 12px;
+}
+
+.recipepage-container {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: 12px;
+  min-height: calc(100vh - 24px);
+}
+
+.recipe-content-area {
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+.recipe-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+}
+
+.back-btn {
+  font-size: 20px;
+  line-height: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #dcdcdc;
+  background: #fff;
+  cursor: pointer;
+}
+.back-btn:hover {
+  background: #f2f2f2;
+}
+
+.right-actions {
+  display: flex;
+  gap: 12px;
+}
+.ghost-btn,
+.create-btn2 {
+  height: 40px;
+  padding: 0 15px;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ghost-btn {
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  color: #333;
+}
+
+.ghost-btn:hover {
+  background: #f0f0f0;
+}
+
+.create-btn2 {
+  background: #6DA67A;
+  color: #fff;
+  border: none;
+}
+
+.create-btn2:hover {
+  background: #5B8D67;
+}
+
+.header-grid {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+  padding: 16px;
+  margin-bottom: 12px;
+
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 24px;
+}
+
+.photo-wrap {
+  margin: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+}
+.photo-wrap img {
+  display: block;
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+}
+
+.info-wrap .title {
+  margin: 6px 0 8px;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.author-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e9ecef;
+  flex-shrink: 0;
+}
+.author-meta .nickname {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.author-meta .desc {
+  margin: 0;
+  color: #444;
+  line-height: 1.4;
+}
+
+.save-row {
+  margin-top: 14px;
+}
+.save-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1.5px solid #cde7cf;
+  background: #f4fbf4;
+  color: #2e7d32;
+  font-weight: 600;
+  cursor: pointer;
+}
+.save-button img {
+  width: 18px;
+  height: 18px;
+}
+.save-button:hover {
+  background: #e9f7ea;
+}
+
+.content-grid {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+  padding: 16px;
+
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 24px;
+}
+
+.block h2 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* колонка інгредієнтів */
+
+.inline-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #444;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.inline-meta img:first-child {
+  width: 18px;
+  height: 18px;
+}
+.rating {
+  display: flex;
+  gap: 4px;
+  margin: 12px 0 16px;
+}
+
+.rating img {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.rating img:hover {
+  transform: scale(1.15);
+}
+.ing-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #eeeeee;
+  line-height: 1.35;
+  font-size: 15px;
+}
+.ing-item:last-child {
+  border-bottom: none;
+}
+
+/* колонка інструкцій */
+
+.steps-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+.steps-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+.time {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #444;
+  font-size: 14px;
+}
+.time img {
+  width: 18px;
+  height: 18px;
+}
+
+.steps-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.step {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  font-size: 15px;
+  line-height: 1.45;
+}
+.step + .step {
+  border-top: 1px solid #f0f0f0;
+}
+.num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  font-weight: 700;
+  border: 2px solid #1e1e1e;
+  font-size: 14px;
+}
+.step p {
+  margin: 0;
+  color: #222;
+  line-height: 1.45;
+}
+
+@media (max-width: 1100px) {
+  .header-grid,
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  .photo-wrap img {
+    height: 240px;
+  }
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.recipepage {
+  background-color: #f3f3f3;
+  height: 100vh;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* сітка з фіксованою висотою */
+.recipepage-container {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: 12px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.recipe-content-area {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content-grid {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+  padding: 16px;
+
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 24px;
+
+  flex: 1;
+  overflow: hidden;
+}
+
+.ingredients,
+.steps {
+  overflow-y: auto;
+  max-height: 100%;
+  padding-right: 8px;
+}
+
+/* для краси — прихований скролбар */
+.ingredients::-webkit-scrollbar,
+.steps::-webkit-scrollbar {
+  width: 6px;
+}
+.ingredients::-webkit-scrollbar-thumb,
+.steps::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+.ingredients::-webkit-scrollbar-thumb:hover,
+.steps::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
