@@ -1,5 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
-import './SavedPage.css';
+import { Link, useNavigate } from 'react-router-dom';
+import './MyRecipesPage.css';
 
 import Sidebar from '../../components/Sidebar/Sidebar';
 import RecipeCard from '../../components/RecipeCard/RecipeCard';
@@ -18,7 +18,7 @@ const savedRecipes = [
   { name: 'Лазанья болоньєзе', time: '60 хвилин', rating: 5, portions: 4, image: recipe3 },
 ];
 
-export default function SavedPage() {
+export default function MyRecipesPage() {
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -43,7 +43,7 @@ export default function SavedPage() {
               >
                 ←
               </button>
-              <h2>Збережені ({savedRecipes.length})</h2>
+              <h2>Мої рецепти ({savedRecipes.length})</h2>
             </div>
 
             <div className="right-buttons">
@@ -56,7 +56,7 @@ export default function SavedPage() {
 
           <div className="search-input">
             <img src={searchIcon} alt="search" />
-            <input type="text" placeholder="Пошук у вашій колекції..." />
+            <input type="text" placeholder="Пошук ваших рецептів..." />
           </div>
 
           <div className="saved-grid">

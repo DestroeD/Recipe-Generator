@@ -1,3 +1,4 @@
+import { Link, useNavigate } from "react-router-dom";
 import "./GeneratorPage.css";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -14,6 +15,13 @@ export default function GeneratorPage() {
   const [rating, setRating] = useState(4);
   const portions = 2;
 
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate("/", { replace: true });
+  };
+
   return (
     <div className="generatorpage">
       <div className="generatorpage-container">
@@ -22,13 +30,23 @@ export default function GeneratorPage() {
         <main className="generator-section">
           <div className="top-buttons">
             <div className="left-side">
-              <button className="back-btn">←</button>
+              <button
+                className="back-btn"
+                type="button"
+                onClick={handleBack}
+                aria-label="Повернутися на попередню сторінку"
+                title="Назад"
+              >
+                ←
+              </button>
               <h2>Генератор страв</h2>
             </div>
 
             <div className="right-buttons">
-              <img src={profileIcon} alt="profile" className="profile-icon" />
-              <button className="create-btn">+ Створити рецепт</button>
+              <Link to="/profile" className="profile-link" aria-label="Профіль">
+                <img src={profileIcon} alt="profile" className="profile-icon" />
+              </Link>
+              <Link to="/create" className="create-btn">+ Створити рецепт</Link>
             </div>
           </div>
 

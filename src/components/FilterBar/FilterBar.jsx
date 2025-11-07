@@ -1,11 +1,12 @@
+import { Link } from "react-router-dom";
 import './FilterBar.css';
 
 export default function FilterBar() {
   return (
     <aside className="filter-bar">
       <div className="top-buttons">
-        <button className="login-btn">Вхід</button>
-        <button className="create-btn">+ Створити рецепт</button>
+        <Link to="/login" className="login-btn">Вхід</Link>
+        <Link to="/create" className="create-btn">+ Створити рецепт</Link>
       </div>
 
       <hr className="divider" />
