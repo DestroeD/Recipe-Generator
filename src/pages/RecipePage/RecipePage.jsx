@@ -1,5 +1,6 @@
 import './RecipePage.css';
-import { useState } from 'react';
+import { useMemo } from 'react';
+import { useParams, useNavigate, Link } from "react-router-dom";
 
 import Sidebar from '../../components/Sidebar/Sidebar';
 
@@ -9,33 +10,33 @@ import profileIcon from '../../assets/icons/user-icon.svg';
 import star from '../../assets/icons/star.svg';
 import starFilled from '../../assets/icons/star-filled.svg';
 
-import recipeImg from '../../assets/images/recipes/recipe6.jpeg';
+import { recipes } from "../../data/recipes";
 
 export default function RecipePage() {
-  const [rating, setRating] = useState(4.3);
+  const { slug } = useParams();
+  const navigate = useNavigate();
 
-  const recipe = {
-    title: 'Картопля по-селянськи',
-    author: 'Nickname',
-    description: 'Молода картопля по-селянськи в рукаві – що може бути краще? 🤤',
-    time: '30 хв',
-    servings: '6–8 порцій',
+  const recipe = useMemo(
+    () => recipes.find((r) => r.slug === slug),
+    [slug]
+  );
 
-    steps: [
-      'Для початку гарно помити картоплю 🥔.',
-      'Потім нарізати дольками картоплю та перекладаємо в миску та ще раз промиваємо.',
-      'Далі беремо сіль 🧂, перець мелений, приправу до картоплі та соняшникову 🌻 олію та додаємо в миску до картоплі та все ретельно перемішуємо.',
-      'Далі беремо деко та кладемо на нього фольгу та перекладаємо картоплю. Потім кладемо деко в духовку та випікаємо 180–200 градусів, 25–45 хвилин. Смачного!✨💜',
-    ],
-    ingredients: [
-      '1,5 кг молодої дрібної картоплі',
-      '200–300 г бекону',
-      '1 велика цибуля',
-      'До смаку спеції (сіль, перець, копчена паприка, розмарин, чебрець, куркума)',
-      '1 ст. л. олії',
-      'Жменя кропу, щоб прикрасити',
-    ],
+  const handleBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate("/", { replace: true });
   };
+
+  function formatPortions(n) {
+  const abs = Math.abs(n);
+  const last = abs % 10;
+  const lastTwo = abs % 100;
+
+  if (last === 1 && lastTwo !== 11) return `${n} порція`;
+  if (last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14)) return `${n} порції`;
+  return `${n} порцій`;
+}
+
+  const rounded = Math.round(recipe.rating ?? 0);
 
   return (
     <div className="recipepage">
@@ -44,9 +45,15 @@ export default function RecipePage() {
 
         <main className="recipe-content-area">
           <div className="recipe-topbar">
-            <button className="back-btn" aria-label="Назад">
-              ←
-            </button>
+            <button
+                className="back-btn"
+                type="button"
+                onClick={handleBack}
+                aria-label="Повернутися на попередню сторінку"
+                title="Назад"
+              >
+                ←
+              </button>
 
             <div className="right-actions">
               <button className="ghost-btn">Вхід</button>
@@ -56,11 +63,11 @@ export default function RecipePage() {
 
           <div className="header-grid">
             <figure className="photo-wrap">
-              <img src={recipeImg} alt={recipe.title} />
+              <img src={recipe.image} alt={recipe.name} />
             </figure>
 
             <div className="info-wrap">
-              <h1 className="title">{recipe.title}</h1>
+              <h1 className="title">{recipe.name}</h1>
 
               <div className="author-row">
                 <img src={profileIcon} alt="Аватар" className="avatar" />
@@ -74,7 +81,7 @@ export default function RecipePage() {
                 {[1, 2, 3, 4, 5].map((i) => (
                   <img
                     key={i}
-                    src={i <= Math.round(rating) ? starFilled : star}
+                    src={i <= rounded ? starFilled : star}
                     alt={`Зірка ${i}`}
                     className="star"
                     onClick={() => setRating(i)}
@@ -97,14 +104,12 @@ export default function RecipePage() {
 
               <div className="inline-meta">
                 <img src={profileIcon} alt="" aria-hidden="true" />
-                <span>{recipe.servings}</span>
+                <span>{formatPortions(recipe.portions)}</span>
               </div>
 
               <ul className="ing-list">
                 {recipe.ingredients.map((text, i) => (
-                  <li key={i} className="ing-item">
-                    {text}
-                  </li>
+                  <li key={i} className="ing-item">{text}</li>
                 ))}
               </ul>
             </section>

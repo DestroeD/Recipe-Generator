@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import React from 'react';
 import './RegisterModal.css';
 
@@ -5,7 +6,9 @@ function Register() {
   return (
     <div className="register-page">
       <div className="register-modal">
-        <button className="close-btn">×</button>
+        <Link to="/" className="close-btn" aria-label="Закрити та повернутись на головну">
+          ×
+        </Link>
         <h1 className="register-title">Реєстрація</h1>
 
         <form className="register-form">

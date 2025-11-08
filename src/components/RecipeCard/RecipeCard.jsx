@@ -13,6 +13,16 @@ export default function RecipeCard({ recipe }) {
     setSaved(!saved);
   };
 
+  function formatPortions(n) {
+  const abs = Math.abs(n);
+  const last = abs % 10;
+  const lastTwo = abs % 100;
+
+  if (last === 1 && lastTwo !== 11) return `${n} порція`;
+  if (last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14)) return `${n} порції`;
+  return `${n} порцій`;
+  }
+
   return (
     <div className="recipe-card">
       <img src={recipe.image} alt={recipe.name} className="recipe-img" />
@@ -36,7 +46,7 @@ export default function RecipeCard({ recipe }) {
               />
             ))}
           </div>
-          <p className="portions">{recipe.portions} порції</p>
+          <p className="portions">{formatPortions(recipe.portions)}</p>
         </div>
 
         <button className={`save-btn ${saved ? 'saved' : ''}`} onClick={toggleSave}>
