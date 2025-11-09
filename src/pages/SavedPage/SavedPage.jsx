@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { recipes } from "../../data/recipes";
 import './SavedPage.css';
 
 import Sidebar from '../../components/Sidebar/Sidebar';
@@ -6,17 +7,11 @@ import RecipeCard from '../../components/RecipeCard/RecipeCard';
 import searchIcon from '../../assets/icons/search.svg';
 import profileIcon from '../../assets/icons/user-icon.svg';
 
-import recipe2 from '../../assets/images/recipes/recipe2.jpg';
-import recipe3 from '../../assets/images/recipes/recipe3.jpg';
-import recipe4 from '../../assets/images/recipes/recipe4.jpg';
-import recipe5 from '../../assets/images/recipes/recipe5.jpg';
+const savedSlugs = ["pasta-carbonara", "veggie-omelette", "pumpkin-cream-soup", "lasagna-bolognese"];
 
-const savedRecipes = [
-  { name: 'Паста Карбонара', time: '25 хвилин', rating: 5, portions: 2, image: recipe2 },
-  { name: 'Омлет з овочами', time: '15 хвилин', rating: 5, portions: 2, image: recipe5 },
-  { name: 'Крем-суп із гарбуза', time: '40 хвилин', rating: 5, portions: 3, image: recipe4 },
-  { name: 'Лазанья болоньєзе', time: '60 хвилин', rating: 5, portions: 4, image: recipe3 },
-];
+const savedRecipes = savedSlugs
+  .map(slug => recipes.find(r => r.slug === slug))
+  .filter(Boolean);
 
 export default function SavedPage() {
   const navigate = useNavigate();
@@ -60,8 +55,10 @@ export default function SavedPage() {
           </div>
 
           <div className="saved-grid">
-            {savedRecipes.map((r, i) => (
-              <RecipeCard key={i} recipe={{ ...r, saved: true }} />
+            {savedRecipes.map((r) => (
+              <Link key={r.slug} to={`/recipe/${r.slug}`} className="card-link" aria-label={r.name}>
+                <RecipeCard recipe={{ ...r, saved: true }} />
+              </Link>
             ))}
           </div>
         </main>

@@ -22,6 +22,14 @@ export default function GeneratorPage() {
     else navigate("/", { replace: true });
   };
 
+  const openRecipe = () => navigate("/recipe/chicken-pilaf");
+  const onKeyOpen = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openRecipe();
+    }
+  };
+
   return (
     <div className="generatorpage">
       <div className="generatorpage-container">
@@ -52,9 +60,11 @@ export default function GeneratorPage() {
 
           <section
             className="featured-card is-clickable"
-            role="button"
+            role="link"
             tabIndex={0}
             aria-label="Відкрити рецепт: Курячий плов"
+            onClick={openRecipe}
+            onKeyDown={onKeyOpen}
           >
             <div className="featured-left">
               <img src={recipeImg} alt="Курячий плов" />
