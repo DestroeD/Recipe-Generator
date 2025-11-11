@@ -2,10 +2,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { recipes } from "../../data/recipes";
 import './SavedPage.css';
 
+import AuthSwitch from '../../components/AuthSwitch/AuthSwitch';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import RecipeCard from '../../components/RecipeCard/RecipeCard';
 import searchIcon from '../../assets/icons/search.svg';
-import profileIcon from '../../assets/icons/user-icon.svg';
 
 const savedSlugs = ["pasta-carbonara", "veggie-omelette", "pumpkin-cream-soup", "lasagna-bolognese"];
 
@@ -42,9 +42,7 @@ export default function SavedPage() {
             </div>
 
             <div className="right-buttons">
-              <Link to="/profile" className="profile-link" aria-label="Профіль">
-                <img src={profileIcon} alt="profile" className="profile-icon" />
-              </Link>
+              <AuthSwitch />
               <Link to="/create" className="create-btn">+ Створити рецепт</Link>
             </div>
           </div>

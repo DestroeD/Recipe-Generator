@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import './FilterBar.css';
+import AuthSwitch from "../AuthSwitch/AuthSwitch";
 
 export default function FilterBar() {
   return (
     <aside className="filter-bar">
       <div className="top-buttons">
-        <Link to="/login" className="login-btn">Вхід</Link>
+        <AuthSwitch />
         <Link to="/create" className="create-btn">+ Створити рецепт</Link>
       </div>
 

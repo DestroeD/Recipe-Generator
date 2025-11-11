@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 
+import { AuthProvider } from "./context/AuthContext.jsx";
+import { SavedProvider } from "./context/SavedContext.jsx";
+
 import '@fontsource/inter/300.css';
 import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
@@ -13,9 +16,13 @@ import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <SavedProvider>
+          <App />
+        </SavedProvider>
+      </BrowserRouter>
+    </AuthProvider>
   </React.StrictMode>
 );
 

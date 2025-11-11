@@ -1,8 +1,18 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import './ProfilePage.css';
 import userIcon from '../../assets/icons/user-icon.svg';
 
+import { useAuth } from "../../context/AuthContext.jsx";
+
 export default function ProfilePage() {
+  const { user, logout } = useAuth();
+  const nav = useNavigate();
+
+  const onLogout = () => {
+    nav("/", { replace: true });
+    logout();
+  };
+
   return (
     <div className="profile-page">
       <h1 className="profile-title">Профіль</h1>
@@ -16,8 +26,8 @@ export default function ProfilePage() {
           <img src={userIcon} alt="Аватар користувача" className="avatar-icon" />
         </div>
 
-        <h2 className="profile-name">Ім’я користувача</h2>
-        <p className="profile-description">Короткий опис</p>
+        <h2 className="profile-name">{user?.name || "Користувач"}</h2>
+        <p className="profile-description">{user?.email}</p>
 
         <button className="edit-btn">Редагувати профіль</button>
 
@@ -26,7 +36,7 @@ export default function ProfilePage() {
           <Link to="/my-recipes" className="profile-link">Мої рецепти</Link>
         </div>
 
-        <button className="logout-btn">Вийти</button>
+        <button className="logout-btn" onClick={onLogout}>Вийти</button>
       </div>
     </div>
   );

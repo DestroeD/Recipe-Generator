@@ -1,16 +1,41 @@
+import { useNavigate, useLocation } from "react-router-dom";
+
 import './RecipeCard.css';
 import { useState } from 'react';
 import clockIcon from '../../assets/icons/clock.svg';
 import starIcon from '../../assets/icons/star.svg';
 import starFilledIcon from '../../assets/icons/star-filled.svg';
-import bookmarkIcon from '../../assets/icons/bookmark.svg';
+
+import { useAuth } from "../../context/AuthContext.jsx";
+import { useSaved } from "../../context/SavedContext.jsx";
 
 export default function RecipeCard({ recipe }) {
-  const [rating, setRating] = useState(recipe.rating);
-  const [saved, setSaved] = useState(recipe.saved || false);
+  const nav = useNavigate();
+  const location = useLocation();
+  const { isAuthed } = useAuth();
+  const { isSaved, toggleSaved } = useSaved();
+  const savedNow = isSaved(recipe.id);
 
-  const toggleSave = () => {
-    setSaved(!saved);
+  const onSaveClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isAuthed) {
+      nav("/login", { replace: false, state: { from: location } });
+      return;
+    }
+    try {
+      toggleSaved(recipe.id);
+    } catch (err) {
+      nav("/login", { replace: false, state: { from: location } });
+    }
+  };
+  
+  const [rating, setRating] = useState(recipe.rating);
+
+  const setStar = (e, i) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setRating(i);
   };
 
   function formatPortions(n) {
@@ -42,15 +67,19 @@ export default function RecipeCard({ recipe }) {
                 key={i}
                 src={i <= rating ? starFilledIcon : starIcon}
                 alt="rating"
-                onClick={() => setRating(i)}
+                onClick={(e) => setStar(e, i)}
               />
             ))}
           </div>
           <p className="portions">{formatPortions(recipe.portions)}</p>
         </div>
 
-        <button className={`save-btn ${saved ? 'saved' : ''}`} onClick={toggleSave}>
-          {saved ? 'Збережено' : 'Зберегти рецепт'}
+        <button
+          type="button"
+          className={`save-btn ${savedNow ? "saved" : ""}`}
+          onClick={onSaveClick}
+        >
+          {savedNow ? "Збережено" : "Зберегти рецепт"}
         </button>
       </div>
     </div>

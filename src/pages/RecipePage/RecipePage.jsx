@@ -1,6 +1,6 @@
 import './RecipePage.css';
-import { useMemo } from 'react';
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useMemo, useState, useEffect } from 'react';
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 
 import Sidebar from '../../components/Sidebar/Sidebar';
 
@@ -11,15 +11,36 @@ import star from '../../assets/icons/star.svg';
 import starFilled from '../../assets/icons/star-filled.svg';
 
 import { recipes } from "../../data/recipes";
+import { useAuth } from "../../context/AuthContext.jsx";
+import { useSaved } from "../../context/SavedContext.jsx";
 
 export default function RecipePage() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { isAuthed } = useAuth();
+  const { isSaved, toggleSaved } = useSaved();
+
+  const onSaveClick = (e) => {
+    e.preventDefault();
+    if (!isAuthed) {
+      navigate("/login", { state: { from: location }, replace: false });
+      return;
+    }
+    try {
+      toggleSaved(recipe.id);
+    } catch {
+      navigate("/login", { state: { from: location }, replace: false });
+    }
+  };
 
   const recipe = useMemo(
     () => recipes.find((r) => r.slug === slug),
     [slug]
   );
+
+  const savedNow = recipe ? isSaved(recipe.id) : false;
 
   const handleBack = () => {
     if (window.history.length > 1) navigate(-1);
@@ -90,9 +111,13 @@ export default function RecipePage() {
               </div>
 
               <div className="save-row">
-                <button className="save-button">
+                <button
+                  type="button"
+                  className={`save-button ${savedNow ? "saved" : ""}`}
+                  onClick={onSaveClick}
+                >
                   <img src={bookmarkIcon} alt="" aria-hidden="true" />
-                  Зберегти рецепт
+                  {savedNow ? "Збережено" : "Зберегти рецепт"}
                 </button>
               </div>
             </div>

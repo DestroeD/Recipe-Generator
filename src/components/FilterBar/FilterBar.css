@@ -16,7 +16,6 @@
   gap: 10px;
 }
 
-.login-btn,
 .create-btn {
   height: 40px;
   padding: 0 15px;
@@ -28,16 +27,6 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;      
-}
-
-.login-btn {
-  border: 1px solid #ccc;
-  background: #f9f9f9;
-  color: #333;
-}
-
-.login-btn:hover {
-  background: #f0f0f0;
 }
 
 .create-btn {
