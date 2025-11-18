@@ -13,6 +13,7 @@ import starFilled from '../../assets/icons/star-filled.svg';
 import { recipes } from "../../data/recipes";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useSaved } from "../../context/SavedContext.jsx";
+import AuthSwitch from '../../components/AuthSwitch/AuthSwitch.jsx';
 
 export default function RecipePage() {
   const { slug } = useParams();
@@ -77,7 +78,7 @@ export default function RecipePage() {
               </button>
 
             <div className="right-actions">
-              <button className="ghost-btn">Вхід</button>
+              <AuthSwitch />
               <button className="create-btn2">+ Створити рецепт</button>
             </div>
           </div>
