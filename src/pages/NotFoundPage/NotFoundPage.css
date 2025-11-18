@@ -1,0 +1,120 @@
+.nf-wrap{
+  min-height:100vh;
+  background:#f3f3f3;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* м’які декоративні плями */
+.nf-blob{
+  position:absolute; 
+  filter:blur(40px); 
+  opacity:.18; 
+  z-index:0;
+}
+.nf-blob-a{
+  width:420px;
+  height:420px;
+  border-radius:50%;
+  background:#6DA67A; 
+  top:-120px; 
+  left:-80px;
+}
+.nf-blob-b{
+  width:520px;
+  height:520px;
+  border-radius:50%;
+  background:#8CC39A; 
+  bottom:-160px; 
+  right:-120px;
+}
+
+/* основна картка */
+.nf-card{
+  position:relative; z-index:1;
+  width:min(760px, 100%);
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+  padding:28px 28px 24px;
+  text-align:center;
+}
+
+/* великі цифри */
+.nf-code{
+  margin:0;
+  font-size:76px;
+  font-weight:900;
+  line-height:1;
+  letter-spacing:1px;
+  color:#6DA67A;
+}
+
+/* заголовок/текст */
+.nf-title{
+  margin:8px 0 6px;
+  font-size:28px;
+  font-weight:800;
+  color:#1e1e1e;
+}
+.nf-desc{
+  margin:0 0 18px;
+  color:#555; font-size:15.5px;
+}
+
+/* кнопки дій */
+.nf-actions{ display:flex; gap:10px; justify-content:center; margin-bottom:14px; }
+.ghost-btn, .create-btn2{
+  height:40px; 
+  padding:0 15px; 
+  font-size:14px; 
+  border-radius:10px;
+  cursor:pointer; 
+  transition:all .2s ease; 
+  text-decoration:none;
+  display:inline-flex; 
+  align-items:center; 
+  justify-content:center;
+}
+.ghost-btn{ border:1px solid #ccc; background:#f9f9f9; color:#333; }
+.ghost-btn:hover{ background:#f0f0f0; }
+.create-btn2{ background:#6DA67A; color:#fff; border:1.5px solid #6DA67A; }
+.create-btn2:hover{ background:#5B8D67; border-color:#5B8D67; }
+
+/* пошук */
+.nf-search{
+  display:flex; align-items:center; gap:10px;
+  background:#f7f7f7; border:1px solid #ccc; border-radius:12px;
+  padding:10px 12px; max-width:520px; margin:0 auto 8px;
+}
+.nf-search-icon {
+  width:18px; height:18px; opacity:.7;
+}
+.nf-search input{
+  border:none; outline:none; background:transparent; flex:1; font-size:14.5px; color:#222;
+}
+.nf-search-btn{
+  text-decoration:none; border-radius:8px; border:1px solid #cde7cf;
+  background:#f4fbf4; color:#2e7d32; font-weight:600; padding:6px 10px;
+}
+.nf-search-btn:hover{ background:#e9f7ea; }
+
+/* підказки */
+.nf-links{ color:#666; margin-top:8px; font-size:14px; }
+.nf-link{ color:#1a5aff; text-decoration:none; }
+.nf-link:hover{ text-decoration:underline; }
+
+/* фокус-навігація */
+.ghost-btn:focus-visible, .create-btn2:focus-visible, .nf-search-btn:focus-visible, .nf-link:focus-visible{
+  outline:2px solid #6DA67A; outline-offset:2px;
+  border-radius:10px;
+}
+
+@media (max-width:640px){
+  .nf-code{ font-size:56px; }
+  .nf-title{ font-size:24px; }
+  .nf-actions{ flex-wrap:wrap; }
+}

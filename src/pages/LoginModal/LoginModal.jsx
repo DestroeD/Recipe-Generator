@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import React from 'react';
 import './LoginModal.css';
 
@@ -5,7 +6,9 @@ function Login() {
   return (
     <div className="login-page">
       <div className="login-modal">
-        <button className="close-btn">×</button>
+        <Link to="/" className="close-btn" aria-label="Закрити та повернутись на головну">
+          ×
+        </Link>
         <h1 className="login-title">Вхід</h1>
 
         <form className="login-form">
@@ -21,9 +24,9 @@ function Login() {
             Забули пароль?
           </a>
           <p className="register-text">Не маєте облікового запису?</p>
-          <a href="#" className="register-link">
+          <Link to="/register" className="register-link">
             Зареєструватися
-          </a>
+          </Link>
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { Link, useNavigate } from "react-router-dom";
 import './CreateRecipePage.css';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import cameraIcon from '../../assets/icons/camera.svg';
@@ -5,6 +6,13 @@ import profileIcon from '../../assets/icons/user-icon.svg';
 import clockIcon from '../../assets/icons/clock.svg';
 
 export default function CreateRecipePage() {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate("/", { replace: true });
+  };
+
   return (
     <div className="recipepage">
       <div className="recipepage-container">
@@ -12,12 +20,18 @@ export default function CreateRecipePage() {
 
         <main className="recipe-content-area">
           <div className="recipe-topbar">
-            <button className="back-btn" aria-label="Назад">
-              ←
-            </button>
+            <button
+                className="back-btn"
+                type="button"
+                onClick={handleBack}
+                aria-label="Повернутися на попередню сторінку"
+                title="Назад"
+              >
+                ←
+              </button>
 
             <div className="right-actions">
-              <button className="delete-btn">Видалити</button>
+              <Link to="/" className="delete-btn">Видалити</Link>
               <button className="publish-btn">Опублікувати</button>
             </div>
           </div>

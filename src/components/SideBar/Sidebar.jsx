@@ -1,3 +1,4 @@
+import { NavLink, Link } from "react-router-dom";
 import './Sidebar.css';
 import logo from '../../assets/logo.svg';
 import searchIcon from '../../assets/icons/search.svg';
@@ -9,26 +10,38 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <div className="sidebar-title">
+        <Link to="/" className="sidebar-title" aria-label="На головну">
           <img src={logo} alt="logo" className="logo" />
           <h2>RecGen</h2>
-        </div>
+        </Link>
         <button className="collapse-btn">❮</button>
       </div>
 
       <nav className="nav">
         <ul>
           <li>
-            <img src={searchIcon} alt="" className="icon-nav" /> Пошук
+            <NavLink to="/" end className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+              <img src={searchIcon} alt="" className="icon-nav" />
+              <span>Пошук</span>
+            </NavLink>
           </li>
           <li>
-            <img src={savedIcon} alt="" className="icon-nav" /> Збережені страви
+            <NavLink to="/saved" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+              <img src={savedIcon} alt="" className="icon-nav" />
+              <span>Збережені страви</span>
+            </NavLink>
           </li>
           <li>
-            <img src={randomIcon} alt="" className="icon-nav" /> Випадкова страва
+            <NavLink to="/generator" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+              <img src={randomIcon} alt="" className="icon-nav" />
+              <span>Випадкова страва</span>
+            </NavLink>
           </li>
           <li>
-            <img src={profileIcon} alt="" className="icon-nav" /> Профіль
+            <NavLink to="/profile" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+              <img src={profileIcon} alt="" className="icon-nav" />
+              <span>Профіль</span>
+            </NavLink>
           </li>
         </ul>
       </nav>

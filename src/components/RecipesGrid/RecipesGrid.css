@@ -35,6 +35,17 @@
 }
 
 /* Сітка рецептів */
+
+.card-link,
+.card-link:visited,
+.card-link:hover,
+.card-link:active {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  outline: none;
+}
+
 .recipes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
