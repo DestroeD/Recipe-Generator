@@ -1,0 +1,90 @@
+/* Контейнер */
+.sidebar {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 5px 12px;
+  display: flex;
+  flex-direction: column;
+  font-family: "Inter", sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Верхня частина */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.sidebar-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 28px;
+  height: 28px;
+}
+
+.sidebar-title h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d2d2d;
+}
+
+.collapse-btn {
+  border: none;
+  background: none;
+  font-size: 20px;
+  color: #666;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.collapse-btn:hover {
+  transform: scale(1.15);
+  color: #4caf50;
+}
+
+/* Навігація */
+.nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.nav li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15.5px;
+  color: #333;
+  font-weight: 500;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.nav li:hover {
+  background: rgba(109, 166, 122, 0.1);
+  color: #4caf50;
+}
+
+/* Іконки */
+.icon-nav {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  filter: brightness(0) saturate(100%) invert(23%) sepia(3%) saturate(7%) hue-rotate(341deg) brightness(92%) contrast(87%);
+  transition: filter 0.25s ease;
+}
+
+.nav li:hover .icon-nav {
+  filter: brightness(0) saturate(100%) invert(62%) sepia(34%) saturate(523%) hue-rotate(73deg) brightness(97%) contrast(90%);
+}

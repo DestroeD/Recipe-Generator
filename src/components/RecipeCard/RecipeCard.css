@@ -1,0 +1,152 @@
+.recipe-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.recipe-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Фото */
+.recipe-img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+}
+
+/* Контент */
+.recipe-info {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Назва */
+.recipe-info h3 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #222;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 42px;
+}
+
+
+/* Час приготування */
+.meta {
+  display: flex;
+  align-items: center;
+  font-size: 13.5px;
+  color: #666;
+  margin-top: 4px;
+  margin-bottom: 2px;
+  position: relative;
+  top: 2px;
+}
+
+.icon {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  opacity: 0.85;
+}
+
+/* Зірки + порції */
+.rating-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0;
+}
+
+.stars {
+  display: flex;
+  gap: 3px;
+}
+
+.stars img {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.stars img:hover {
+  transform: scale(1.15);
+}
+
+.portions {
+  font-size: 13.5px;
+  color: #444;
+}
+
+/* Кнопка */
+.save-btn {
+  background: #6DA67A;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 0;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+  transition: background 0.2s ease;
+}
+
+.save-btn:hover {
+  background: #5B8D67;
+}
+
+.save-btn.saved {
+  background: #a3c4ab;
+  cursor: default;
+}
+
+.save-btn.saved:hover {
+  background: #a3c4ab;
+}
+
+.save-btn {
+  background: #6da67a;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 0;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.save-btn:hover {
+  background: #5b8d67;
+}
+
+.save-btn.saved {
+  background: #a3c4ab;
+  color: #fff;
+}
+
+.save-btn.saved:hover {
+  background: #91b79a;
+}

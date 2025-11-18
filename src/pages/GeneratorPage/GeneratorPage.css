@@ -1,0 +1,296 @@
+:root {
+  --green:#6da67a;
+  --green-dark:#5b8d67;
+  --border:#e6e6e6;
+  --muted:#596069;
+  --text:#1f1f1f;
+}
+
+.generatorpage {
+  background-color: #f3f3f3;
+  min-height: 100vh;
+  padding: 12px;
+}
+
+.generatorpage-container {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: 12px;
+  height: calc(100vh - 24px);
+}
+
+.generator-section {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 25px 32px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.left-side { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #333;
+}
+
+.right-buttons { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+}
+
+.profile-icon{
+  width: 40px; height: 40px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: box-shadow .15s ease, transform .05s ease, outline-color .15s ease;
+}
+.profile-icon:hover{ box-shadow: 0 0 0 3px rgba(109,166,122,.18); }
+.profile-icon:active{ transform: scale(.98); }
+.profile-icon:focus-visible{
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+.create-btn {
+  height: 40px;
+  padding: 0 15px;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .2s ease;
+  background: var(--green);
+  color: #fff;
+  border: none;
+}
+.create-btn:hover { background: var(--green-dark); }
+
+.featured-card{
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 18px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  padding: 16px;
+  align-items: center;
+  margin-top: 100px;
+}
+
+.featured-left img{
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.featured-right{ display: flex; flex-direction: column; }
+
+.featured-title{
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 2px 0 8px;
+}
+
+.featured-desc{
+  font-size: 14.5px;
+  color: var(--muted);
+  margin: 0 0 10px;
+  max-width: 730px;
+}
+
+.meta-row{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.rating-line{
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.meta-stars{ display: inline-flex; gap: 4px; }
+.meta-stars img{ width: 16px; height: 16px; }
+.meta-portions{ font-size: 13.5px; color: #444; }
+
+
+.meta-time{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  color: #444;
+}
+.meta-time img{ width: 16px; height: 16px; opacity: .9; }
+
+.meta-stars{
+  display: inline-flex;
+  gap: 4px;
+}
+
+/* кнопка-зірка */
+.star-btn{
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 2px;
+  line-height: 0;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.star-btn img{
+  width: 16px;
+  height: 16px;
+  transition: transform .08s ease, filter .15s ease;
+}
+.star-btn:hover img{ transform: scale(1.12); }
+.star-btn:active img{ transform: scale(1.05); }
+.star-btn:focus-visible{
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+.meta-portions{ font-size: 13.5px; color: #444; }
+
+/* Контурна зелена кнопка */
+.save-outline{
+  width: max-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--green);
+  border: 1.5px solid var(--green);
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.save-outline:hover{
+  color: var(--green-dark);
+  background: rgba(109,166,122,.08);
+  border-color: var(--green-dark);
+  box-shadow: 0 1px 6px rgba(0,0,0,.08);
+}
+
+.save-outline:active{ transform: scale(.99); }
+.save-outline:focus-visible{
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+.save-outline .bookmark-ico{
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask: url("../../assets/icons/bookmark.svg") center / contain no-repeat;
+          mask: url("../../assets/icons/bookmark.svg") center / contain no-repeat;
+  transform: translateY(1px);
+}
+
+.cta-wrap{
+  display: grid;
+  place-items: center;
+  margin-top: 50px;
+}
+
+.start-cta{
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 64px;
+  padding: 0 26px;
+  background: var(--green);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+}
+.start-cta:hover{ background: var(--green-dark); }
+.start-cta:active{ transform: scale(.99); }
+.start-cta:focus-visible{
+  outline: 2px solid #fff;
+  box-shadow: 0 0 0 4px rgba(109,166,122,.4);
+}
+
+.start-ico{
+  width: 35px;
+  height: 35px;
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask: url("../../assets/icons/gear.svg") center / contain no-repeat;
+          mask: url("../../assets/icons/gear.svg") center / contain no-repeat;
+  transform: translateY(1px);
+}
+
+@media (max-width: 1060px){
+  .featured-card{ grid-template-columns: 1fr; }
+  .featured-left img{ height: 200px; }
+}
+
+.featured-card{
+  transition: box-shadow .18s ease, border-color .18s ease, transform .06s ease, background-color .18s ease;
+  user-select: none;
+}
+
+.featured-card.is-clickable{ cursor: pointer; }
+
+.featured-card.is-clickable:hover{
+  background: #fcfdfc;
+  border-color: var(--green);
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+
+.featured-card.is-clickable:active{
+  transform: translateY(1px);
+}
+
+.featured-card.is-clickable:focus-visible,
+.featured-card.is-clickable:focus-within{
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+.featured-left img{
+  transition: transform .25s ease, box-shadow .18s ease;
+}
+.featured-card.is-clickable:hover .featured-left img{
+  transform: scale(1.02);
+}
+
+/* коли активні внутрішні кнопки — не «тиснемо» картку */
+.featured-card.is-clickable:has(.star-btn:active),
+.featured-card.is-clickable:has(.save-outline:active){
+  transform: none;
+}
+
+/* коли курсор над інтерактивними елементами — не показувати “руку” від картки */
+.featured-card.is-clickable:has(.star-btn:hover),
+.featured-card.is-clickable:has(.save-outline:hover){
+  cursor: default;
+}
