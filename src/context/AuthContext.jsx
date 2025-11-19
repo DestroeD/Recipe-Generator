@@ -8,6 +8,8 @@ import {
 
 const AuthCtx = createContext(null);
 
+const CURRENT_USER_KEY = "rg_demo_current_user";
+
 export function AuthProvider({ children }) {
   // щоб після reload стан зберігався
   const [user, setUser] = useState(() => getCurrentUser());
@@ -31,6 +33,28 @@ export function AuthProvider({ children }) {
       logout() {
         svcLogout();
         setUser(null);
+      },
+      
+      updateProfile(updates) {
+        setUser((prev) => {
+          if (!prev) return prev;
+
+          const updatedUser = {
+            ...prev,
+            ...updates,
+          };
+
+          try {
+            localStorage.setItem(
+              CURRENT_USER_KEY,
+              JSON.stringify(updatedUser)
+            );
+          } catch (e) {
+            console.error("Failed to persist updated user", e);
+          }
+
+          return updatedUser;
+        });
       },
     }),
     [user, isAuthed]
