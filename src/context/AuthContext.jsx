@@ -4,72 +4,64 @@ import {
   login as svcLogin,
   register as svcRegister,
   logout as svcLogout,
+  updateProfileName as svcUpdateProfileName,
 } from "../services/authService";
 
-const AuthCtx = createContext(null);
+import { auth } from "../services/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
-const CURRENT_USER_KEY = "rg_demo_current_user";
+const AuthCtx = createContext(null);
 
 export function AuthProvider({ children }) {
   // щоб після reload стан зберігався
   const [user, setUser] = useState(() => getCurrentUser());
+  const [initializing, setInitializing] = useState(true);
+
   const isAuthed = !!user;
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, () => {
+      const current = getCurrentUser();
+      setUser(current);
+      setInitializing(false);
+    });
+
+    return () => unsub();
+  }, []);
 
   // API, яким користуватимуться компоненти
   const value = useMemo(
     () => ({
       user,
       isAuthed,
+      initializing,
+
       async login(creds) {
-        const u = svcLogin(creds);
+        const u = await svcLogin(creds);
         setUser(u);
         return u;
       },
+
       async register(data) {
-        const u = svcRegister(data);
+        const u = await svcRegister(data);
         setUser(u);
         return u;
       },
-      logout() {
-        svcLogout();
+
+      async logout() {
+        await svcLogout();
         setUser(null);
       },
-      
-      updateProfile(updates) {
-        setUser((prev) => {
-          if (!prev) return prev;
 
-          const updatedUser = {
-            ...prev,
-            ...updates,
-          };
-
-          try {
-            localStorage.setItem(
-              CURRENT_USER_KEY,
-              JSON.stringify(updatedUser)
-            );
-          } catch (e) {
-            console.error("Failed to persist updated user", e);
-          }
-
-          return updatedUser;
-        });
+      // оновлення ІМЕНІ профілю через Firebase
+      async updateProfileName(newName) {
+        const u = await svcUpdateProfileName(newName);
+        setUser(u);
+        return u;
       },
     }),
-    [user, isAuthed]
+    [user, isAuthed, initializing]
   );
-
-  // синхронізація між вкладками
-  useEffect(() => {
-    const onStorage = (e) => {
-      if (e.key?.includes("rg_demo_current_user")) {
-        setUser(getCurrentUser());
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
 
   return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
 }

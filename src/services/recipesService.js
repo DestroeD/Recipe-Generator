@@ -1,27 +1,50 @@
-import { storage } from "./storage";
+import { db } from "./firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 function ensureUser(userId) {
   if (!userId) throw new Error("Треба увійти в акаунт, щоб зберігати рецепти");
 }
-function savedKey(userId) {
-  return `saved_recipes_ids_${userId}`;
+
+function savedDocRef(userId) {
+  ensureUser(userId);
+  return doc(db, "savedRecipes", userId);
 }
 
-export function getSavedIds(userId) {
-  ensureUser(userId);
-  return new Set(storage.get(savedKey(userId), []));
+export async function getSavedIds(userId) {
+  const ref = savedDocRef(userId);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    return new Set();
+  }
+
+  const data = snap.data();
+  const ids = Array.isArray(data.ids) ? data.ids : [];
+  return new Set(ids);
 }
 
-export function isSaved(id, userId) {
-  ensureUser(userId);
-  return getSavedIds(userId).has(id);
+export async function isSaved(id, userId) {
+  const ids = await getSavedIds(userId);
+  return ids.has(id);
 }
 
-export function toggleSaved(id, userId) {
-  ensureUser(userId);
-  const key = savedKey(userId);
-  const ids = new Set(storage.get(key, []));
-  ids.has(id) ? ids.delete(id) : ids.add(id);
-  storage.set(key, Array.from(ids));
-  return ids;
+export async function toggleSaved(id, userId) {
+  const ref = savedDocRef(userId);
+  const snap = await getDoc(ref);
+
+  const currentIds =
+    snap.exists() && Array.isArray(snap.data().ids)
+      ? new Set(snap.data().ids)
+      : new Set();
+
+  if (currentIds.has(id)) {
+    currentIds.delete(id);
+  } else {
+    currentIds.add(id);
+  }
+
+  // записуємо масив id у Firestore
+  await setDoc(ref, { ids: Array.from(currentIds) });
+
+  return currentIds;
 }

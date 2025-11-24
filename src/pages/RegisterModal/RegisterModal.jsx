@@ -57,7 +57,19 @@ export default function Register() {
       await register({ name: name.trim(), email: email.trim(), password });
       nav(from, { replace: true });
     } catch (err) {
-      setFormError(err?.message || "Сталася помилка під час реєстрації.");
+      console.error(err);
+
+      let msg = "Сталася помилка під час реєстрації.";
+
+      if (err?.code === "auth/email-already-in-use") {
+        msg = "Користувач з таким email вже існує.";
+      } else if (err?.code === "auth/weak-password") {
+        msg = "Пароль занадто слабкий (мінімум 6 символів).";
+      } else if (err?.code === "auth/invalid-email") {
+        msg = "Некоректний email.";
+      }
+
+      setFormError(msg);
     } finally {
       setSubmitting(false);
     }

@@ -6,7 +6,7 @@ import userIcon from '../../assets/icons/user-icon.svg';
 import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function ProfilePage() {
-  const { user, logout, updateProfile } = useAuth();
+  const { user, logout, updateProfileName } = useAuth();
   const nav = useNavigate();
 
   // Локальний стан редагування
@@ -15,9 +15,9 @@ export default function ProfilePage() {
   const [avatarPreview, setAvatarPreview] = useState(user?.avatar || null);
   const fileInputRef = useRef(null);
 
-  const onLogout = () => {
+  const onLogout = async () => {
+    await logout();
     nav("/", { replace: true });
-    logout();
   };
 
   // почати редагування
@@ -35,11 +35,10 @@ export default function ProfilePage() {
   };
 
   // зберегти зміни
-  const saveEdit = () => {
-    updateProfile({
-      name: draftName.trim() || user?.name || "Користувач",
-      avatar: avatarPreview || null,
-    });
+  const saveEdit = async () => {
+    const safeName = draftName.trim() || user?.name || "Користувач";
+    await updateProfileName(safeName);
+
     setIsEditing(false);
   };
 
