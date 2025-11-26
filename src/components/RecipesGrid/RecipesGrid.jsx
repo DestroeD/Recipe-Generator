@@ -3,11 +3,46 @@ import { Link } from "react-router-dom";
 import searchIcon from '../../assets/icons/search.svg';
 import './RecipesGrid.css';
 import RecipeCard from '../RecipeCard/RecipeCard';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
-export default function RecipesGrid({ recipes = [] }) {
-  const [search, setSearch] = useState('');
+import { getAllRecipes } from "../../services/recipesService";
 
+export default function RecipesGrid() {
+  const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        setLoading(true);
+        setError("");
+        const list = await getAllRecipes();
+        if (!cancelled) {
+          setRecipes(list);
+        }
+      } catch (e) {
+        console.error("Failed to load recipes", e);
+        if (!cancelled) {
+          setError("Не вдалося завантажити рецепти.");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
     if (!q) return recipes;
@@ -38,13 +73,28 @@ export default function RecipesGrid({ recipes = [] }) {
         )}
       </div>
 
-      <div className="recipes-grid">
-        {filtered.map((r) => (
-          <Link key={r.slug} to={`/recipe/${r.slug}`} className="card-link" aria-label={r.name}>
-            <RecipeCard recipe={r} />
-          </Link>
-        ))}
-      </div>
+      {loading && (
+        <p className="recipes-loading">Завантаження рецептів…</p>
+      )}
+
+      {error && !loading && (
+        <p className="recipes-error">{error}</p>
+      )}
+
+      {!loading && !error && (
+        <div className="recipes-grid">
+          {filtered.map((r) => (
+            <Link
+              key={r.slug}
+              to={`/recipe/${r.slug}`}
+              className="card-link"
+              aria-label={r.name}
+            >
+              <RecipeCard recipe={r} />
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

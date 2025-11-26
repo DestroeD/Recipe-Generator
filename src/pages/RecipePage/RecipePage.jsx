@@ -1,19 +1,20 @@
-import './RecipePage.css';
-import { useMemo, useState, useEffect } from 'react';
+import "./RecipePage.css";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 
-import Sidebar from '../../components/Sidebar/Sidebar';
+import Sidebar from "../../components/Sidebar/Sidebar";
 
-import clockIcon from '../../assets/icons/clock.svg';
-import bookmarkIcon from '../../assets/icons/bookmark.svg';
-import profileIcon from '../../assets/icons/user-icon.svg';
-import star from '../../assets/icons/star.svg';
-import starFilled from '../../assets/icons/star-filled.svg';
+import clockIcon from "../../assets/icons/clock.svg";
+import bookmarkIcon from "../../assets/icons/bookmark.svg";
+import profileIcon from "../../assets/icons/user-icon.svg";
+import star from "../../assets/icons/star.svg";
+import starFilled from "../../assets/icons/star-filled.svg";
 
-import { recipes } from "../../data/recipes";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useSaved } from "../../context/SavedContext.jsx";
-import AuthSwitch from '../../components/AuthSwitch/AuthSwitch.jsx';
+import AuthSwitch from "../../components/AuthSwitch/AuthSwitch.jsx";
+
+import { getRecipeBySlug } from "../../services/recipesService";
 
 export default function RecipePage() {
   const { slug } = useParams();
@@ -23,23 +24,58 @@ export default function RecipePage() {
   const { isAuthed } = useAuth();
   const { isSaved, toggleSaved } = useSaved();
 
-  const onSaveClick = (e) => {
+  const [recipe, setRecipe] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        setLoading(true);
+        setError("");
+        const r = await getRecipeBySlug(slug);
+        if (!cancelled) {
+          if (!r) {
+            setError("Рецепт не знайдено.");
+          }
+          setRecipe(r || null);
+        }
+      } catch (e) {
+        console.error("Failed to load recipe", e);
+        if (!cancelled) {
+          setError("Не вдалося завантажити рецепт.");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  const onSaveClick = async (e) => {
     e.preventDefault();
+    if (!recipe) return;
+
     if (!isAuthed) {
       navigate("/login", { state: { from: location }, replace: false });
       return;
     }
+
     try {
-      toggleSaved(recipe.id);
-    } catch {
+      await toggleSaved(recipe.id);
+    } catch (err) {
+      console.error("Failed to toggle saved recipe", err);
       navigate("/login", { state: { from: location }, replace: false });
     }
   };
-
-  const recipe = useMemo(
-    () => recipes.find((r) => r.slug === slug),
-    [slug]
-  );
 
   const savedNow = recipe ? isSaved(recipe.id) : false;
 
@@ -49,16 +85,44 @@ export default function RecipePage() {
   };
 
   function formatPortions(n) {
-  const abs = Math.abs(n);
-  const last = abs % 10;
-  const lastTwo = abs % 100;
+    const abs = Math.abs(n);
+    const last = abs % 10;
+    const lastTwo = abs % 100;
 
-  if (last === 1 && lastTwo !== 11) return `${n} порція`;
-  if (last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14)) return `${n} порції`;
-  return `${n} порцій`;
-}
+    if (last === 1 && lastTwo !== 11) return `${n} порція`;
+    if (last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14))
+      return `${n} порції`;
+    return `${n} порцій`;
+  }
 
-  const rounded = Math.round(recipe.rating ?? 0);
+  const rounded = Math.round(recipe?.rating ?? 0);
+
+  // стани loading / error
+  if (loading) {
+    return (
+      <div className="recipepage">
+        <div className="recipepage-container">
+          <Sidebar />
+          <main className="recipe-content-area">
+            <p>Завантаження рецепта…</p>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !recipe) {
+    return (
+      <div className="recipepage">
+        <div className="recipepage-container">
+          <Sidebar />
+          <main className="recipe-content-area">
+            <p>{error || "Рецепт не знайдено."}</p>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="recipepage">
@@ -68,24 +132,30 @@ export default function RecipePage() {
         <main className="recipe-content-area">
           <div className="recipe-topbar">
             <button
-                className="back-btn"
-                type="button"
-                onClick={handleBack}
-                aria-label="Повернутися на попередню сторінку"
-                title="Назад"
-              >
-                ←
-              </button>
+              className="back-btn"
+              type="button"
+              onClick={handleBack}
+              aria-label="Повернутися на попередню сторінку"
+              title="Назад"
+            >
+              ←
+            </button>
 
             <div className="right-actions">
               <AuthSwitch />
-              <button className="create-btn2">+ Створити рецепт</button>
+              <Link to="/create" className="create-btn2">
+                + Створити рецепт
+              </Link>
             </div>
           </div>
 
           <div className="header-grid">
             <figure className="photo-wrap">
-              <img src={recipe.image} alt={recipe.name} />
+              {recipe.image ? (
+                <img src={recipe.image} alt={recipe.name} />
+              ) : (
+                <div className="photo-placeholder">Без фото</div>
+              )}
             </figure>
 
             <div className="info-wrap">
@@ -106,7 +176,6 @@ export default function RecipePage() {
                     src={i <= rounded ? starFilled : star}
                     alt={`Зірка ${i}`}
                     className="star"
-                    onClick={() => setRating(i)}
                   />
                 ))}
               </div>
@@ -135,7 +204,9 @@ export default function RecipePage() {
 
               <ul className="ing-list">
                 {recipe.ingredients.map((text, i) => (
-                  <li key={i} className="ing-item">{text}</li>
+                  <li key={i} className="ing-item">
+                    {text}
+                  </li>
                 ))}
               </ul>
             </section>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import './CreateRecipePage.css';
@@ -6,6 +6,10 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import cameraIcon from '../../assets/icons/camera.svg';
 import profileIcon from '../../assets/icons/user-icon.svg';
 import clockIcon from '../../assets/icons/clock.svg';
+
+import { createRecipe } from "../../services/recipesService";
+
+const DRAFT_KEY = "rg_create_recipe_draft_v1"; // ключ для localStorage
 
 export default function CreateRecipePage() {
   const navigate = useNavigate();
@@ -15,7 +19,6 @@ export default function CreateRecipePage() {
   const authorName =
     user?.name || user?.displayName || user?.email || "Гість";
 
-  // стейти форми
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [servings, setServings] = useState("");
@@ -30,6 +33,55 @@ export default function CreateRecipePage() {
 
   // фото для кроків
   const [stepPhotos, setStepPhotos] = useState([null, null]);
+
+  const [publishing, setPublishing] = useState(false);
+
+  // 1) Завантаження чернетки з localStorage при першому рендері
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const draft = JSON.parse(raw);
+
+      if (draft.title) setTitle(draft.title);
+      if (draft.description) setDescription(draft.description);
+      if (draft.servings) setServings(draft.servings);
+      if (draft.time) setTime(draft.time);
+      if (Array.isArray(draft.ingredients) && draft.ingredients.length > 0) {
+        setIngredients(draft.ingredients);
+      }
+      if (Array.isArray(draft.steps) && draft.steps.length > 0) {
+        setSteps(draft.steps);
+      }
+      if (typeof draft.mainPhoto === "string") {
+        setMainPhoto(draft.mainPhoto);
+      }
+      if (Array.isArray(draft.stepPhotos) && draft.stepPhotos.length > 0) {
+        setStepPhotos(draft.stepPhotos);
+      }
+    } catch (e) {
+      console.error("Failed to load draft", e);
+    }
+  }, []);
+
+  // 2) Збереження чернетки при зміні будь-якого з полів
+  useEffect(() => {
+    const draft = {
+      title,
+      description,
+      servings,
+      time,
+      ingredients,
+      steps,
+      mainPhoto,
+      stepPhotos,
+    };
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    } catch (e) {
+      console.error("Failed to save draft", e);
+    }
+  }, [title, description, servings, time, ingredients, steps, mainPhoto, stepPhotos]);
 
   // допоміжні хендлери
   const handleIngredientChange = (index, value) => {
@@ -52,7 +104,6 @@ export default function CreateRecipePage() {
     });
   };
 
-  // видалення інгредієнта
   const handleRemoveIngredient = (index) => {
     setIngredients((prev) => {
       if (prev.length === 1) return prev;
@@ -60,7 +111,6 @@ export default function CreateRecipePage() {
     });
   };
 
-  // видалення кроку
   const handleRemoveStep = (index) => {
     setSteps((prev) => {
       if (prev.length === 1) return prev;
@@ -82,20 +132,28 @@ export default function CreateRecipePage() {
   const handleMainPhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    setMainPhoto(url);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setMainPhoto(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   // обробка завантаження фото конкретного кроку
   const handleStepPhotoChange = (index, e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    setStepPhotos((prev) => {
-      const copy = [...prev];
-      copy[index] = url;
-      return copy;
-    });
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setStepPhotos((prev) => {
+        const copy = [...prev];
+        copy[index] = reader.result;
+        return copy;
+      });
+    };
+    reader.readAsDataURL(file);
   };
 
   const resetForm = () => {
@@ -107,6 +165,12 @@ export default function CreateRecipePage() {
     setSteps(["", ""]);
     setMainPhoto(null);
     setStepPhotos([null, null]);
+
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch (e) {
+      console.error("Failed to remove draft", e);
+    }
   };
 
   const handleDelete = () => {
@@ -136,7 +200,13 @@ export default function CreateRecipePage() {
     return regex.test(trimmed);
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
+    if (!user) {
+      alert("Щоб опублікувати рецепт, необхідно увійти в акаунт.");
+      navigate("/login", { replace: false, state: { from: { pathname: "/create" } } });
+      return;
+    }
+
     const cleanedTitle = title.trim();
     const cleanedDescription = description.trim();
     const cleanedServings = servings.trim();
@@ -163,6 +233,11 @@ export default function CreateRecipePage() {
       return;
     }
 
+    if (!mainPhoto) {
+      alert("Додайте головне фото страви.");
+      return;
+    }
+
     // 2) Перевірка кількості порцій
     if (!isValidServings(cleanedServings)) {
       alert("Вкажіть коректну кількість порцій (ціле число від 1 до 99).");
@@ -175,23 +250,35 @@ export default function CreateRecipePage() {
       return;
     }
 
-    const newRecipe = {
-      id: Date.now().toString(),
-      name: cleanedTitle,
-      description: cleanedDescription,
-      servings: Number(cleanedServings),
-      time: cleanedTime,
-      ingredients: cleanedIngredients,
-      steps: cleanedSteps,
-      mainPhoto,
-      stepPhotos,
-      author: authorName,
-    };
+    try {
+      setPublishing(true);
 
-    console.log("NEW RECIPE (без бекенду):", newRecipe);
-    alert("Рецепт умовно опубліковано (консоль).");
+      const payload = {
+        name: cleanedTitle,
+        description: cleanedDescription,
+        portions: Number(cleanedServings),
+        time: cleanedTime,
+        ingredients: cleanedIngredients,
+        steps: cleanedSteps,
+        author: authorName,
+        authorId: user?.id || null,
+      };
 
-    resetForm();
+      const created = await createRecipe(payload);
+
+      resetForm();
+
+      if (created?.slug) {
+        navigate(`/recipe/${created.slug}`, { replace: true });
+      } else {
+        alert("Рецепт опубліковано, але не вдалося відкрити сторінку рецепта.");
+      }
+    } catch (e) {
+      console.error("Failed to publish recipe", e);
+      alert("Не вдалося опублікувати рецепт. Спробуйте ще раз.");
+    } finally {
+      setPublishing(false);
+    }
   };
 
   const handleBack = () => {
@@ -229,6 +316,7 @@ export default function CreateRecipePage() {
                 type="button"
                 className="publish-btn"
                 onClick={handlePublish}
+                disabled={publishing}
               >
                 Опублікувати
               </button>

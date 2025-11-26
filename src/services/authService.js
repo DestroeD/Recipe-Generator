@@ -14,19 +14,25 @@ function normEmail(email) {
   return String(email || "").trim().toLowerCase();
 }
 
-function toSession(user) {
-  return user
-    ? {
-        id: user.uid,
-        name: user.displayName || "",
-        email: user.email,
-      }
-    : null;
+function getStoredSession() {
+  return storage.get(CURRENT_KEY, null);
 }
 
-// збереження/очищення сесії в localStorage
-function saveSession(user) {
-  const session = toSession(user);
+function toSessionFromFirebase(user, prev = null) {
+  if (!user) return null;
+
+  return {
+    id: user.uid,
+    name: user.displayName || prev?.name || "",
+    email: user.email,
+    avatar: prev?.avatar ?? null,
+  };
+}
+
+function saveSessionFromFirebase(user) {
+  const prev = getStoredSession();
+  const session = toSessionFromFirebase(user, prev);
+
   if (session) {
     storage.set(CURRENT_KEY, session);
   } else {
@@ -38,9 +44,9 @@ function saveSession(user) {
 export function getCurrentUser() {
   const fbUser = auth.currentUser;
   if (fbUser) {
-    return saveSession(fbUser);
+    return saveSessionFromFirebase(fbUser);
   }
-  return storage.get(CURRENT_KEY, null);
+  return getStoredSession();
 }
 
 export function isAuthenticated() {
@@ -53,7 +59,6 @@ export async function logout() {
 }
 
 export async function register({ name, email, password }) {
-  // найпростіша валідація форм
   const n = String(name || "").trim();
   const e = normEmail(email);
   const p = String(password || "");
@@ -66,8 +71,8 @@ export async function register({ name, email, password }) {
 
   await updateProfile(cred.user, { displayName: n });
 
-  // зберігаємо сесію в localStorage
-  return saveSession(cred.user);
+  // зберігаємо сесію
+  return saveSessionFromFirebase(cred.user);
 }
 
 export async function login({ email, password }) {
@@ -76,18 +81,36 @@ export async function login({ email, password }) {
 
   const cred = await signInWithEmailAndPassword(auth, e, p);
 
-  return saveSession(cred.user);
+  return saveSessionFromFirebase(cred.user);
 }
 
-export async function updateProfileName(newName) {
-  const name = String(newName || "").trim();
-  if (name.length < 2) throw new Error("Ім’я занадто коротке");
-
+// оновлення імені в Firebase + name/avatar у localStorage
+export async function updateProfileData({ name, avatar }) {
   const fbUser = auth.currentUser;
   if (!fbUser) throw new Error("Необхідно увійти в акаунт");
 
-  await updateProfile(fbUser, { displayName: name });
+  let safeName;
 
-  // оновлюємо кеш та повертаємо оновлену сесію
-  return saveSession(auth.currentUser);
+  if (name !== undefined) {
+    safeName = String(name || "").trim();
+    if (safeName.length < 2) throw new Error("Ім’я занадто коротке");
+
+    await updateProfile(fbUser, { displayName: safeName });
+  }
+
+  const prev =
+    getStoredSession() || toSessionFromFirebase(fbUser, null);
+
+  const session = {
+    ...prev,
+    ...(safeName !== undefined ? { name: safeName } : {}),
+    ...(avatar !== undefined ? { avatar } : {}),
+  };
+
+  storage.set(CURRENT_KEY, session);
+  return session;
+}
+
+export async function updateProfileName(newName) {
+  return updateProfileData({ name: newName });
 }

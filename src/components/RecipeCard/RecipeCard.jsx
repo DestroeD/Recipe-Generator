@@ -16,17 +16,22 @@ export default function RecipeCard({ recipe }) {
   const { isSaved, toggleSaved } = useSaved();
   const savedNow = isSaved(recipe.id);
 
-  const onSaveClick = (e) => {
+  const onSaveClick = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+
     if (!isAuthed) {
       nav("/login", { replace: false, state: { from: location } });
       return;
     }
     try {
-      toggleSaved(recipe.id);
+      await toggleSaved(recipe.id);
     } catch (err) {
-      nav("/login", { replace: false, state: { from: location } });
+      console.error("Failed to toggle saved recipe", err);
+
+      if (err?.message === "AUTH_REQUIRED") {
+        nav("/login", { replace: false, state: { from: location } });
+      }
     }
   };
   

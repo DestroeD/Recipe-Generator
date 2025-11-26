@@ -4,7 +4,7 @@ import {
   login as svcLogin,
   register as svcRegister,
   logout as svcLogout,
-  updateProfileName as svcUpdateProfileName,
+  updateProfileData as svcUpdateProfile,
 } from "../services/authService";
 
 import { auth } from "../services/firebase";
@@ -53,9 +53,9 @@ export function AuthProvider({ children }) {
         setUser(null);
       },
 
-      // оновлення ІМЕНІ профілю через Firebase
-      async updateProfileName(newName) {
-        const u = await svcUpdateProfileName(newName);
+      // оновлення профілю (ім’я + аватар)
+      async updateProfile(patch) {
+        const u = await svcUpdateProfile(patch);
         setUser(u);
         return u;
       },

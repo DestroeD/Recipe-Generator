@@ -1,21 +1,69 @@
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import { recipes } from "../../data/recipes";
 import './MyRecipesPage.css';
 
 import AuthSwitch from '../../components/AuthSwitch/AuthSwitch';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import RecipeCard from '../../components/RecipeCard/RecipeCard';
 import searchIcon from '../../assets/icons/search.svg';
-import profileIcon from '../../assets/icons/user-icon.svg';
 
-const savedSlugs = ["pasta-carbonara", "veggie-omelette", "pumpkin-cream-soup", "lasagna-bolognese"];
+import { useAuth } from "../../context/AuthContext.jsx";
 
-const savedRecipes = savedSlugs
-  .map(slug => recipes.find(r => r.slug === slug))
-  .filter(Boolean);
+import { getAllRecipes } from "../../services/recipesService";
 
 export default function MyRecipesPage() {
   const navigate = useNavigate();
+  const { user, isAuthed } = useAuth();
+
+  const [myRecipes, setMyRecipes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!isAuthed || !user) {
+      setMyRecipes([]);
+      setLoading(false);
+      setError("");
+      return;
+    }
+
+    async function load() {
+      try {
+        setLoading(true);
+        setError("");
+        const all = await getAllRecipes();
+        const mine = all.filter((r) => r.authorId === user.id);
+        if (!cancelled) {
+          setMyRecipes(mine);
+        }
+      } catch (e) {
+        console.error("Failed to load my recipes", e);
+        if (!cancelled) {
+          setError("Не вдалося завантажити ваші рецепти.");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthed, user?.id]);
+
+  // пошук по назві серед моїх рецептів
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    if (!q) return myRecipes;
+    return myRecipes.filter((r) => r.name.toLowerCase().includes(q));
+  }, [myRecipes, search]);
 
   const handleBack = () => {
     if (window.history.length > 1) navigate(-1);
@@ -39,7 +87,7 @@ export default function MyRecipesPage() {
               >
                 ←
               </button>
-              <h2>Мої рецепти ({savedRecipes.length})</h2>
+              <h2>Мої рецепти ({myRecipes.length})</h2>
             </div>
 
             <div className="right-buttons">
@@ -48,18 +96,54 @@ export default function MyRecipesPage() {
             </div>
           </div>
 
-          <div className="search-input">
-            <img src={searchIcon} alt="search" />
-            <input type="text" placeholder="Пошук ваших рецептів..." />
-          </div>
+          {!isAuthed && (
+            <p className="myrecipes-info">
+              Увійдіть у акаунт, щоб переглянути свої рецепти.
+            </p>
+          )}
 
-          <div className="saved-grid">
-            {savedRecipes.map((r) => (
-              <Link key={r.slug} to={`/recipe/${r.slug}`} className="card-link" aria-label={r.name}>
-                <RecipeCard recipe={{ ...r, saved: true }} />
-              </Link>
-            ))}
-          </div>
+          {isAuthed && (
+            <>
+              <div className="search-input">
+                <img src={searchIcon} alt="search" />
+                <input
+                  type="text"
+                  placeholder="Пошук ваших рецептів..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+
+              {loading && (
+                <p className="myrecipes-loading">Завантаження ваших рецептів…</p>
+              )}
+
+              {error && !loading && (
+                <p className="myrecipes-error">{error}</p>
+              )}
+
+              {!loading && !error && (
+                <div className="saved-grid">
+                  {filtered.length === 0 ? (
+                    <p className="myrecipes-empty">
+                      У вас поки немає власних рецептів.
+                    </p>
+                  ) : (
+                    filtered.map((r) => (
+                      <Link
+                        key={r.slug}
+                        to={`/recipe/${r.slug}`}
+                        className="card-link"
+                        aria-label={r.name}
+                      >
+                        <RecipeCard recipe={r} />
+                      </Link>
+                    ))
+                  )}
+                </div>
+              )}
+            </>
+          )}
         </main>
       </div>
     </div>

@@ -5,6 +5,15 @@ import recipe4 from "../assets/images/recipes/recipe4.jpg";
 import recipe5 from "../assets/images/recipes/recipe5.jpg";
 import recipe6 from "../assets/images/recipes/recipe6.jpeg";
 
+export const recipeImages = {
+  "chicken-pilaf": recipe1,
+  "pasta-carbonara": recipe2,
+  "lasagna-bolognese": recipe3,
+  "pumpkin-cream-soup": recipe4,
+  "veggie-omelette": recipe5,
+  "country-style-potatoes": recipe6,
+};
+
 export const recipes = [
   {
     id: 1,
