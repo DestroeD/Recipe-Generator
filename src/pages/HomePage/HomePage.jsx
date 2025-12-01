@@ -5,16 +5,16 @@ import FilterBar from '../../components/FilterBar/FilterBar';
 import RecipesGrid from '../../components/RecipesGrid/RecipesGrid';
 
 export default function HomePage() {
-  const [, setResult] = useState(null);
+  const [filteredByFilters, setFilteredByFilters] = useState(null);
 
   return (
     <div className="homepage">
       <div className="homepage-container">
         <Sidebar />
         <main className="recipes-section">
-          <RecipesGrid />
+          <RecipesGrid externalRecipes={filteredByFilters} />
         </main>
-        <FilterBar onResults={setResult} />
+        <FilterBar onResults={setFilteredByFilters} />
       </div>
     </div>
   );

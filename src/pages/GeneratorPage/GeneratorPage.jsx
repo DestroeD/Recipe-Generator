@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./GeneratorPage.css";
 
@@ -7,10 +7,11 @@ import clockIcon from "../../assets/icons/clock.svg";
 import starIcon from "../../assets/icons/star.svg";
 import starFilledIcon from "../../assets/icons/star-filled.svg";
 
-import fallbackImg from "../../assets/images/recipes/recipe1.jpg";
+import fallbackImg from "../../assets/images/image-placeholder.jpg";
 import AuthSwitch from "../../components/AuthSwitch/AuthSwitch";
 
-import { getRandomRecipe } from "../../services/recipesService";
+import { getRandomRecipe, isSaved as svcIsSaved, toggleSaved as svcToggleSaved } from "../../services/recipesService";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function GeneratorPage() {
   const [recipe, setRecipe] = useState(null);
@@ -18,6 +19,10 @@ export default function GeneratorPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const [isSaved, setIsSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -62,6 +67,50 @@ export default function GeneratorPage() {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       openRecipe();
+    }
+  };
+
+  useEffect(() => {
+    if (!recipe || !user?.id) {
+      setIsSaved(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const saved = await svcIsSaved(recipe.id, user.id);
+        if (!cancelled) setIsSaved(saved);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [recipe?.id, user?.id]);
+
+
+  const handleToggleSaved = async (e) => {
+    e.stopPropagation();
+
+    if (!recipe) return;
+
+    if (!user?.id) {
+      alert("Щоб зберігати рецепти, потрібно увійти в акаунт.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const newSet = await svcToggleSaved(recipe.id, user.id);
+      setIsSaved(newSet.has(recipe.id));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -164,13 +213,11 @@ export default function GeneratorPage() {
               <button
                 className="save-outline"
                 onMouseDown={(e) => e.stopPropagation()}
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-                disabled={!recipe}
+                onClick={handleToggleSaved}
+                disabled={!recipe || saving}
               >
                 <span className="bookmark-ico" aria-hidden="true"></span>
-                Зберегти рецепт
+                {isSaved ? "Збережено" : "Зберегти рецепт"}
               </button>
             </div>
           </section>

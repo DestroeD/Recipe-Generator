@@ -45,10 +45,47 @@ export default function FilterBar({ onResults }) {
   }, []);
 
   useEffect(() => {
-    setWithSuggest(debWith ? suggestIngredients(debWith) : []);
+    let cancelled = false;
+
+    async function load() {
+      if (!debWith) {
+        setWithSuggest([]);
+        return;
+      }
+      try {
+        const res = await suggestIngredients(debWith);
+        if (!cancelled) setWithSuggest(res);
+      } catch (e) {
+        console.error("Failed to load suggestions (with)", e);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [debWith]);
+
   useEffect(() => {
-    setWithoutSuggest(debWithout ? suggestIngredients(debWithout) : []);
+    let cancelled = false;
+
+    async function load() {
+      if (!debWithout) {
+        setWithoutSuggest([]);
+        return;
+      }
+      try {
+        const res = await suggestIngredients(debWithout);
+        if (!cancelled) setWithoutSuggest(res);
+      } catch (e) {
+        console.error("Failed to load suggestions (without)", e);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [debWithout]);
 
   // додавання чіпів тільки кліком по підказці
@@ -77,8 +114,27 @@ export default function FilterBar({ onResults }) {
 
   // виклик пошуку
   useEffect(() => {
-    const res = searchRecipes(query);
-    onResults?.(res);
+    let cancelled = false;
+
+    async function doSearch() {
+      try {
+        const res = await searchRecipes(query);
+        if (!cancelled) {
+          onResults?.(res);
+        }
+      } catch (e) {
+        console.error("Failed to search recipes", e);
+        if (!cancelled) {
+          onResults?.([]);
+        }
+      }
+    }
+
+    doSearch();
+
+    return () => {
+      cancelled = true;
+    };
   }, [query, onResults]);
 
   const reset = () => {

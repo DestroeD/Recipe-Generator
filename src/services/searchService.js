@@ -1,5 +1,5 @@
 import { INGREDIENTS } from "../data/ingredients";
-import { recipes as ALL_RECIPES } from "../data/recipes";
+import { getAllRecipes } from "./recipesService";
 
 // Індекси словника
 const nameToId = new Map();
@@ -77,55 +77,65 @@ export function resolveInputToIds(input) {
 
 // Побудова індексу рецептів
 let built = false;
+let buildingPromise = null;
 const ingredientIndex = new Map();
 const recipeById = new Map();
 
-function ensureIndex() {
+async function ensureIndex() {
   if (built) return;
+  if (buildingPromise) {
+    await buildingPromise;
+    return;
+  }
 
-  ALL_RECIPES.forEach(r => {
-    recipeById.set(r.id, r);
+  buildingPromise = (async () => {
+    const ALL_RECIPES = await getAllRecipes();
 
-    let ids = [];
+    ALL_RECIPES.forEach(r => {
+      recipeById.set(r.id, r);
 
-    if (Array.isArray(r.ingredientIds)) {
-      ids = r.ingredientIds;
-    } else {
-      const rawList = Array.isArray(r.ingredientsRaw)
-        ? r.ingredientsRaw
-        : Array.isArray(r.ingredients)
-        ? r.ingredients
-        : [];
+      let ids = [];
 
-      if (rawList.length) {
-        const joined = rawList.join(", ");
-        const { recognized } = resolveInputToIds(joined);
-        ids = recognized.map(x => x.id);
+      if (Array.isArray(r.ingredientIds)) {
+        ids = r.ingredientIds;
+      } else {
+        const rawList = Array.isArray(r.ingredientsRaw)
+          ? r.ingredientsRaw
+          : Array.isArray(r.ingredients)
+          ? r.ingredients
+          : [];
+
+        if (rawList.length) {
+          const joined = rawList.join(", ");
+          const { recognized } = resolveInputToIds(joined);
+          ids = recognized.map(x => x.id);
+        }
+
+        r.ingredientIds = ids;
       }
 
-      r.ingredientIds = ids;
-    }
-
-    // індекс ingredientId -> recipeId
-    ids.forEach(id => {
-      if (!ingredientIndex.has(id)) ingredientIndex.set(id, new Set());
-      ingredientIndex.get(id).add(r.id);
+      // індекс ingredientId -> recipeId
+      ids.forEach(id => {
+        if (!ingredientIndex.has(id)) ingredientIndex.set(id, new Set());
+        ingredientIndex.get(id).add(r.id);
+      });
     });
-  });
 
-  built = true;
+    built = true;
+  })();
+
+  await buildingPromise;
 }
 
-export function searchRecipes(query) {
-  ensureIndex();
+export async function searchRecipes(query) {
+  await ensureIndex();
 
   const {
     includeIds = [],
     excludeIds = [],
     timeRanges = [],
     vegetarian = false
-  } = query;
-
+  } = query || {};
 
   // стартовий набір
   let candidateIds = new Set(recipeById.keys());
@@ -138,7 +148,10 @@ export function searchRecipes(query) {
   }
 
   if (excludeIds.length) {
-    const bad = excludeIds.reduce((acc, ing) => union(acc, ingredientIndex.get(ing) || new Set()), new Set());
+    const bad = excludeIds.reduce(
+      (acc, ing) => union(acc, ingredientIndex.get(ing) || new Set()),
+      new Set()
+    );
     candidateIds = diff(candidateIds, bad);
   }
 
@@ -153,12 +166,12 @@ export function searchRecipes(query) {
     return true;
   }
 
-  // фільтр за кількома діапазонами часу
   if (timeRanges && timeRanges.length) {
     result = result.filter(r => {
       let t = r.timeMin;
       if (t == null) {
-        const m = typeof r.time === "string" ? r.time.match(/\d+/) : null;
+        const m =
+          typeof r.time === "string" ? r.time.match(/\d+/) : null;
         t = m ? Number(m[0]) : 0;
       }
       return timeRanges.some(range => fitsRange(t, range));
@@ -168,25 +181,24 @@ export function searchRecipes(query) {
   if (vegetarian) {
     result = result.filter(r => {
       const ids = r.ingredientIds || [];
-      return !ids.some(id => (ingredientById.get(id)?.tags || []).includes("non_vegetarian"));
+      return !ids.some(id =>
+        (ingredientById.get(id)?.tags || []).includes("non_vegetarian")
+      );
     });
   }
 
-
-  // режим EXACT (штраф за "зайві")
-  result = result
+  // режим EXACT (штраф за "зайві") + рейтинг
+  const scored = result
     .map(r => {
       const ids = new Set(r.ingredientIds || []);
       const matches = includeIds.filter(x => ids.has(x)).length;
       const extra = Math.max(0, ids.size - includeIds.length);
-      const score =
-        3 * matches
-        + (r.rating ? 0.5 * r.rating : 0);
+      const score = 3 * matches + (r.rating ? 0.5 * r.rating : 0);
       return { recipe: r, score };
     })
     .sort((a, b) => b.score - a.score);
 
-  return { items: result.map(x => x.recipe), total: result.length };
+  return scored.map(x => x.recipe);
 }
 
 function intersect(a, b) {
