@@ -16,7 +16,6 @@
   gap: 10px;
 }
 
-.login-btn,
 .create-btn {
   height: 40px;
   padding: 0 15px;
@@ -28,16 +27,6 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;      
-}
-
-.login-btn {
-  border: 1px solid #ccc;
-  background: #f9f9f9;
-  color: #333;
-}
-
-.login-btn:hover {
-  background: #f0f0f0;
 }
 
 .create-btn {
@@ -126,6 +115,83 @@
   border-color: #6DA67A;
   background: #fff;
 }
+
+/* обгортка для підказок */
+.suggest-wrapper {
+  position: relative;
+}
+
+/* сам список підказок */
+.suggest-list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  margin-top: 4px;
+
+  list-style: none;
+  padding: 6px 0;
+  margin: 0;
+
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.06);
+  max-height: 220px;
+  overflow: auto;
+  z-index: 5;
+}
+
+/* елемент списку */
+.suggest-item {
+  display: block;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.suggest-item:hover,
+.suggest-item:focus {
+  background: #f7f7f7;
+  outline: none;
+}
+
+/* chips */
+.chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 6px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 5px;
+  border-radius: 12px;
+  background: #f0f2ec;
+  border: 1px solid #e1e5db;
+  font-size: 13px;
+}
+
+.chip--danger {
+  background: #fff1f1;
+  border-color: #ffd5d5;
+}
+
+.chip-x {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: .7;
+}
+.chip-x:hover { opacity: 1; }
 
 .filter-group-time {
   margin-top: -35px;

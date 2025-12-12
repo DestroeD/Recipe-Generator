@@ -11,19 +11,32 @@ import GeneratorPage from './pages/GeneratorPage/GeneratorPage.jsx';
 import MyRecipesPage from "./pages/MyRecipesPage/MyRecipesPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage/NotFoundPage.jsx";
 
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import GuestRoute from "./components/GuestRoute.jsx";
+
 function App() {
   return (
     <Routes>
+      {/* Публічні */}
       <Route path="/" element={<HomePage />} />
-      <Route path="/saved" element={<SavedPage />} />
-      <Route path="/create" element={<CreateRecipePage />} />
-      <Route path="/generator" element={<GeneratorPage />} />
-      <Route path="/profile" element={<ProfilePage />} />
       <Route path="/recipe/:slug" element={<RecipePage />} />
-      <Route path="/login" element={<LoginModal />} />
-      <Route path="/register" element={<RegisterModal />} />
+      <Route path="/generator" element={<GeneratorPage />} />
       <Route path="/home" element={<Navigate to="/" replace />} />
-      <Route path="/my-recipes" element={<MyRecipesPage />} />
+
+      {/* Тільки для гостей (неавторизованих) */}
+      <Route element={<GuestRoute redirectTo="/" />}>
+        <Route path="/login" element={<LoginModal />} />
+        <Route path="/register" element={<RegisterModal />} />
+      </Route>
+
+      {/* Приватні (потрібен логін) */}
+      <Route element={<ProtectedRoute redirectTo="/login" />}>
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/create" element={<CreateRecipePage />} />
+        <Route path="/saved" element={<SavedPage />} />
+        <Route path="/my-recipes" element={<MyRecipesPage />} />
+      </Route>
+
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

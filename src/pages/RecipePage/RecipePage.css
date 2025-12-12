@@ -46,7 +46,7 @@
   display: flex;
   gap: 12px;
 }
-.ghost-btn,
+
 .create-btn2 {
   height: 40px;
   padding: 0 15px;
@@ -54,16 +54,6 @@
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
-}
-
-.ghost-btn {
-  border: 1px solid #ccc;
-  background: #f9f9f9;
-  color: #333;
-}
-
-.ghost-btn:hover {
-  background: #f0f0f0;
 }
 
 .create-btn2 {
@@ -326,7 +316,7 @@ html, body {
   padding-right: 8px;
 }
 
-/* для краси — прихований скролбар */
+/* прихований скролбар */
 .ingredients::-webkit-scrollbar,
 .steps::-webkit-scrollbar {
   width: 6px;

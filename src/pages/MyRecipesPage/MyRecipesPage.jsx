@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { recipes } from "../../data/recipes";
 import './MyRecipesPage.css';
 
+import AuthSwitch from '../../components/AuthSwitch/AuthSwitch';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import RecipeCard from '../../components/RecipeCard/RecipeCard';
 import searchIcon from '../../assets/icons/search.svg';
@@ -42,9 +43,7 @@ export default function MyRecipesPage() {
             </div>
 
             <div className="right-buttons">
-              <Link to="/profile" className="profile-link" aria-label="Профіль">
-                <img src={profileIcon} alt="profile" className="profile-icon" />
-              </Link>
+              <AuthSwitch />
               <Link to="/create" className="create-btn">+ Створити рецепт</Link>
             </div>
           </div>

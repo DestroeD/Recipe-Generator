@@ -3,16 +3,16 @@ import { Link } from "react-router-dom";
 import searchIcon from '../../assets/icons/search.svg';
 import './RecipesGrid.css';
 import RecipeCard from '../RecipeCard/RecipeCard';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
-import { recipes } from "../../data/recipes";
-
-export default function RecipesGrid() {
+export default function RecipesGrid({ recipes = [] }) {
   const [search, setSearch] = useState('');
 
-  const filtered = recipes.filter((r) =>
-    r.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    if (!q) return recipes;
+    return recipes.filter(r => r.name.toLowerCase().includes(q));
+  }, [recipes, search]);
   
   return (
     <div className="recipes-container">
