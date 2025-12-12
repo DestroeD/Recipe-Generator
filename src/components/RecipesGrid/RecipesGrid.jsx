@@ -7,7 +7,7 @@ import { useState, useMemo, useEffect } from 'react';
 
 import { getAllRecipes } from "../../services/recipesService";
 
-export default function RecipesGrid() {
+export default function RecipesGrid({ externalRecipes }) {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -42,13 +42,15 @@ export default function RecipesGrid() {
       cancelled = true;
     };
   }, []);
-  
+
+  const baseList = externalRecipes ?? recipes;
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    if (!q) return recipes;
-    return recipes.filter(r => r.name.toLowerCase().includes(q));
-  }, [recipes, search]);
-  
+    if (!q) return baseList;
+    return baseList.filter(r => r.name.toLowerCase().includes(q));
+  }, [baseList, search]);
+
   return (
     <div className="recipes-container">
       <div className="search-bar">
@@ -73,11 +75,11 @@ export default function RecipesGrid() {
         )}
       </div>
 
-      {loading && (
+      {loading && !externalRecipes && (
         <p className="recipes-loading">Завантаження рецептів…</p>
       )}
 
-      {error && !loading && (
+      {error && !loading && !externalRecipes && (
         <p className="recipes-error">{error}</p>
       )}
 

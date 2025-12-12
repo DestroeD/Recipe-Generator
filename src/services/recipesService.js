@@ -9,6 +9,7 @@ import {
   getDocs,
   query,
   where,
+  deleteDoc,
 } from "firebase/firestore";
 
 import { recipeImages } from "../data/recipes";
@@ -71,8 +72,13 @@ function recipesCollection() {
 
 // підставляємо локальну картинку по slug
 function attachImage(recipe) {
-  const img = recipeImages[recipe.slug] ?? null;
-  return { ...recipe, image: img };
+  const imgFromDoc = recipe.mainPhoto || null;
+  const imgFromLocal = recipeImages[recipe.slug] ?? null;
+
+  return {
+    ...recipe,
+    image: imgFromDoc || imgFromLocal || null,
+  };
 }
 
 export async function createRecipe(data) {
@@ -87,6 +93,7 @@ export async function createRecipe(data) {
     ...data,
     slug,
     rating: 0,
+    authorId: data.authorId ?? null,
     createdAt: serverTimestamp(),
   });
 
@@ -95,6 +102,11 @@ export async function createRecipe(data) {
     slug,
     ...data,
   };
+}
+
+export async function deleteRecipeById(id) {
+  const ref = doc(db, "recipes", id);
+  await deleteDoc(ref);
 }
 
 export async function getAllRecipes() {

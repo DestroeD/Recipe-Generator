@@ -262,6 +262,8 @@ export default function CreateRecipePage() {
         steps: cleanedSteps,
         author: authorName,
         authorId: user?.id || null,
+        mainPhoto,
+        stepPhotos,
       };
 
       const created = await createRecipe(payload);

@@ -14,14 +14,14 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import { useSaved } from "../../context/SavedContext.jsx";
 import AuthSwitch from "../../components/AuthSwitch/AuthSwitch.jsx";
 
-import { getRecipeBySlug } from "../../services/recipesService";
+import { getRecipeBySlug, deleteRecipeById } from "../../services/recipesService";
 
 export default function RecipePage() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { isAuthed } = useAuth();
+  const { isAuthed, user } = useAuth();
   const { isSaved, toggleSaved } = useSaved();
 
   const [recipe, setRecipe] = useState(null);
@@ -78,6 +78,25 @@ export default function RecipePage() {
   };
 
   const savedNow = recipe ? isSaved(recipe.id) : false;
+
+  const canDelete =
+  !!user && !!recipe && user.id && recipe.authorId && user.id === recipe.authorId;
+
+// Обробник видалення
+const onDeleteRecipe = async () => {
+  if (!recipe || !canDelete) return;
+
+  const ok = window.confirm("Видалити цей рецепт назавжди?");
+  if (!ok) return;
+
+  try {
+    await deleteRecipeById(recipe.id);
+    navigate("/", { replace: true });
+  } catch (err) {
+    console.error("Failed to delete recipe", err);
+    alert("Не вдалося видалити рецепт. Спробуйте ще раз.");
+  }
+};
 
   const handleBack = () => {
     if (window.history.length > 1) navigate(-1);
@@ -189,6 +208,16 @@ export default function RecipePage() {
                   <img src={bookmarkIcon} alt="" aria-hidden="true" />
                   {savedNow ? "Збережено" : "Зберегти рецепт"}
                 </button>
+
+                {canDelete && (
+                  <button
+                    type="button"
+                    className="delete-own-recipe-btn"
+                    onClick={onDeleteRecipe}
+                  >
+                    Видалити рецепт
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -221,12 +250,30 @@ export default function RecipePage() {
               </div>
 
               <ol className="steps-list">
-                {recipe.steps.map((text, i) => (
-                  <li key={i} className="step">
-                    <span className="num">{i + 1}</span>
-                    <p>{text}</p>
-                  </li>
-                ))}
+                {recipe.steps.map((text, i) => {
+                  const photo =
+                    Array.isArray(recipe.stepPhotos)
+                      ? recipe.stepPhotos[i]
+                      : null;
+
+                  return (
+                    <li key={i} className="step">
+                      <span className="num">{i + 1}</span>
+
+                      <div className="step-row">
+                        <p>{text}</p>
+
+                        {photo && (
+                          <img
+                            src={photo}
+                            alt={`Крок ${i + 1}`}
+                            className="step-photo-preview"
+                          />
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
               </ol>
             </section>
           </div>
