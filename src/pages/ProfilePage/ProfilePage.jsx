@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import './ProfilePage.css';
-import userIcon from '../../assets/icons/user-icon.svg';
+import "./ProfilePage.css";
+import userIcon from "../../assets/icons/user-icon.svg";
 
 import { useAuth } from "../../context/AuthContext.jsx";
 
@@ -12,39 +12,44 @@ export default function ProfilePage() {
   // Локальний стан редагування
   const [isEditing, setIsEditing] = useState(false);
   const [draftName, setDraftName] = useState(user?.name || "");
-  const [avatarPreview, setAvatarPreview] = useState(user?.avatar || null);
+  
+  const [avatarPreview, setAvatarPreview] = useState(user?.avatar ?? "");
   const fileInputRef = useRef(null);
 
-  const onLogout = () => {
+  const onLogout = async () => {
+    await logout();
     nav("/", { replace: true });
-    logout();
   };
 
   // почати редагування
   const startEdit = () => {
     setIsEditing(true);
     setDraftName(user?.name || "");
-    setAvatarPreview(user?.avatar || null);
+    setAvatarPreview(user?.avatar ?? "");
   };
 
   // скасувати
   const cancelEdit = () => {
     setIsEditing(false);
     setDraftName(user?.name || "");
-    setAvatarPreview(user?.avatar || null);
+    setAvatarPreview(user?.avatar ?? "");
   };
 
   // зберегти зміни
-  const saveEdit = () => {
-    updateProfile({
-      name: draftName.trim() || user?.name || "Користувач",
-      avatar: avatarPreview || null,
+  const saveEdit = async () => {
+    const safeName = draftName.trim() || user?.name || "Користувач";
+    const safeAvatar =
+      avatarPreview !== "" ? avatarPreview : user?.avatar ?? null;
+
+    await updateProfile({
+      name: safeName,
+      avatar: safeAvatar,
     });
+
     setIsEditing(false);
   };
 
   const handleAvatarClick = () => {
-    if (!isEditing) return;
     fileInputRef.current?.click();
   };
 
@@ -54,36 +59,46 @@ export default function ProfilePage() {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setAvatarPreview(reader.result);
+    reader.onload = () => {
+      const result = reader.result || "";
+      setAvatarPreview(typeof result === "string" ? result : "");
     };
     reader.readAsDataURL(file);
   };
 
   const displayName = user?.name || "Користувач";
   const displayEmail = user?.email || "";
+
   const displayAvatar = avatarPreview || user?.avatar || userIcon;
-  const hasCustomAvatar = !!(avatarPreview || user?.avatar);
+  const hasCustomAvatar = Boolean(avatarPreview || user?.avatar);
 
   return (
     <div className="profile-page">
       <h1 className="profile-title">Профіль</h1>
 
       <div className="profile-card">
-        <Link to="/" className="close-btn" aria-label="Закрити та повернутись на головну">
+        <Link
+          to="/"
+          className="close-btn"
+          aria-label="Закрити та повернутись на головну"
+        >
           ×
         </Link>
 
         <button
           type="button"
-          className={`profile-avatar ${isEditing ? "profile-avatar--editable" : ""}`}
+          className={`profile-avatar ${
+            isEditing ? "profile-avatar--editable" : ""
+          }`}
           onClick={handleAvatarClick}
         >
           <img
             src={displayAvatar}
             alt="Аватар користувача"
             className={`avatar-icon ${
-              hasCustomAvatar ? "avatar-icon--photo" : "avatar-icon--placeholder"
+              hasCustomAvatar
+                ? "avatar-icon--photo"
+                : "avatar-icon--placeholder"
             }`}
           />
           {isEditing && (

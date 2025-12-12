@@ -40,7 +40,19 @@ function Login() {
       await login({ email: email.trim(), password });
       navigate(from, { replace: true });
     } catch (e) {
-      setFormErr(e?.message || "Невірний email або пароль.");
+      console.error(e);
+
+      let msg = "Невірний email або пароль.";
+
+      if (e?.code === "auth/invalid-credential") {
+        msg = "Невірний email або пароль.";
+      } else if (e?.code === "auth/user-not-found") {
+        msg = "Користувача з таким email не знайдено.";
+      } else if (e?.code === "auth/too-many-requests") {
+        msg = "Забагато спроб входу. Спробуйте пізніше.";
+      }
+
+      setFormErr(msg);
     } finally {
       setSubmitting(false);
     }

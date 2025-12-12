@@ -1,6 +1,12 @@
 import { storage } from "./storage";
+import { auth } from "./firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile,
+} from "firebase/auth";
 
-const USERS_KEY = "demo_users";
 const CURRENT_KEY = "demo_current_user";
 
 // Нормалізація email
@@ -8,34 +14,51 @@ function normEmail(email) {
   return String(email || "").trim().toLowerCase();
 }
 
-// Зчитати список користувачів
-function listUsers() {
-  return storage.get(USERS_KEY, []);
+function getStoredSession() {
+  return storage.get(CURRENT_KEY, null);
 }
 
-// Зберегти список користувачів
-function saveUsers(users) {
-  storage.set(USERS_KEY, users);
+function toSessionFromFirebase(user, prev = null) {
+  if (!user) return null;
+
+  return {
+    id: user.uid,
+    name: user.displayName || prev?.name || "",
+    email: user.email,
+    avatar: prev?.avatar ?? null,
+  };
 }
 
-function toSession(user) {
-  return user ? { id: user.id, name: user.name, email: user.email } : null;
+function saveSessionFromFirebase(user) {
+  const prev = getStoredSession();
+  const session = toSessionFromFirebase(user, prev);
+
+  if (session) {
+    storage.set(CURRENT_KEY, session);
+  } else {
+    storage.remove(CURRENT_KEY);
+  }
+  return session;
 }
 
 export function getCurrentUser() {
-  return storage.get(CURRENT_KEY, null);
+  const fbUser = auth.currentUser;
+  if (fbUser) {
+    return saveSessionFromFirebase(fbUser);
+  }
+  return getStoredSession();
 }
 
 export function isAuthenticated() {
   return !!getCurrentUser();
 }
 
-export function logout() {
+export async function logout() {
+  await signOut(auth);
   storage.remove(CURRENT_KEY);
 }
 
-export function register({ name, email, password }) {
-  // найпростіша валідація форм
+export async function register({ name, email, password }) {
   const n = String(name || "").trim();
   const e = normEmail(email);
   const p = String(password || "");
@@ -44,55 +67,50 @@ export function register({ name, email, password }) {
   if (!/^\S+@\S+\.\S+$/.test(e)) throw new Error("Некоректний email");
   if (p.length < 6) throw new Error("Пароль має містити щонайменше 6 символів");
 
-  const users = listUsers();
-  if (users.some(u => normEmail(u.email) === e)) {
-    throw new Error("Користувач з таким email вже існує");
-  }
+  const cred = await createUserWithEmailAndPassword(auth, e, p);
 
-  const user = {
-    id: crypto.randomUUID(),
-    name: n,
-    email: e,
-    password: p,
-    createdAt: Date.now(),
-  };
+  await updateProfile(cred.user, { displayName: n });
 
-  saveUsers([...users, user]);
-
-  const session = toSession(user);
-  storage.set(CURRENT_KEY, session);
-  return session;
+  // зберігаємо сесію
+  return saveSessionFromFirebase(cred.user);
 }
 
-export function login({ email, password }) {
+export async function login({ email, password }) {
   const e = normEmail(email);
   const p = String(password || "");
 
-  const users = listUsers();
-  const user = users.find(u => normEmail(u.email) === e && u.password === p);
-  if (!user) throw new Error("Невірний email або пароль");
+  const cred = await signInWithEmailAndPassword(auth, e, p);
 
-  const session = toSession(user);
+  return saveSessionFromFirebase(cred.user);
+}
+
+// оновлення імені в Firebase + name/avatar у localStorage
+export async function updateProfileData({ name, avatar }) {
+  const fbUser = auth.currentUser;
+  if (!fbUser) throw new Error("Необхідно увійти в акаунт");
+
+  let safeName;
+
+  if (name !== undefined) {
+    safeName = String(name || "").trim();
+    if (safeName.length < 2) throw new Error("Ім’я занадто коротке");
+
+    await updateProfile(fbUser, { displayName: safeName });
+  }
+
+  const prev =
+    getStoredSession() || toSessionFromFirebase(fbUser, null);
+
+  const session = {
+    ...prev,
+    ...(safeName !== undefined ? { name: safeName } : {}),
+    ...(avatar !== undefined ? { avatar } : {}),
+  };
+
   storage.set(CURRENT_KEY, session);
   return session;
 }
 
-// Оновити профіль (ім’я) поточного користувача
-export function updateProfileName(newName) {
-  const session = getCurrentUser();
-  if (!session) throw new Error("Необхідно увійти в акаунт");
-
-  const users = listUsers();
-  const idx = users.findIndex(u => u.id === session.id);
-  if (idx === -1) throw new Error("Користувача не знайдено");
-
-  const name = String(newName || "").trim();
-  if (name.length < 2) throw new Error("Ім’я занадто коротке");
-
-  users[idx] = { ...users[idx], name };
-  saveUsers(users);
-
-  const newSession = { ...session, name };
-  storage.set(CURRENT_KEY, newSession);
-  return newSession;
+export async function updateProfileName(newName) {
+  return updateProfileData({ name: newName });
 }
