@@ -1,28 +1,55 @@
+import { Link } from "react-router-dom";
+
 import searchIcon from '../../assets/icons/search.svg';
 import './RecipesGrid.css';
 import RecipeCard from '../RecipeCard/RecipeCard';
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
-import recipe1 from '../../assets/images/recipes/recipe1.jpg';
-import recipe2 from '../../assets/images/recipes/recipe2.jpg';
-import recipe3 from '../../assets/images/recipes/recipe3.jpg';
-import recipe4 from '../../assets/images/recipes/recipe4.jpg';
-import recipe5 from '../../assets/images/recipes/recipe5.jpg';
-import recipe6 from '../../assets/images/recipes/recipe6.jpeg';
+import { getAllRecipes } from "../../services/recipesService";
 
-const recipes = [
-  { name: 'Курячий плов', time: '40 хвилин', rating: 4, portions: 4, image: recipe1 },
-  { name: 'Паста Карбонара', time: '25 хвилин', rating: 5, portions: 2, image: recipe2 },
-  { name: 'Лазанья болоньєзе', time: '60 хвилин', rating: 5, portions: 4, image: recipe3 },
-  { name: 'Крем-суп із гарбуза', time: '40 хвилин', rating: 3, portions: 3, image: recipe4 },
-  { name: 'Омлет з овочами', time: '15 хвилин', rating: 5, portions: 2, image: recipe5 },
-  { name: 'Картопля по-селянськи', time: '30 хвилин', rating: 4, portions: 2, image: recipe6 },
-];
+export default function RecipesGrid({ externalRecipes }) {
+  const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-export default function RecipesGrid() {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
-  const filtered = recipes.filter((r) => r.name.toLowerCase().includes(search.toLowerCase()));
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        setLoading(true);
+        setError("");
+        const list = await getAllRecipes();
+        if (!cancelled) {
+          setRecipes(list);
+        }
+      } catch (e) {
+        console.error("Failed to load recipes", e);
+        if (!cancelled) {
+          setError("Не вдалося завантажити рецепти.");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const baseList = externalRecipes ?? recipes;
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    if (!q) return baseList;
+    return baseList.filter(r => r.name.toLowerCase().includes(q));
+  }, [baseList, search]);
 
   return (
     <div className="recipes-container">
@@ -48,11 +75,28 @@ export default function RecipesGrid() {
         )}
       </div>
 
-      <div className="recipes-grid">
-        {filtered.map((r, i) => (
-          <RecipeCard key={i} recipe={r} />
-        ))}
-      </div>
+      {loading && !externalRecipes && (
+        <p className="recipes-loading">Завантаження рецептів…</p>
+      )}
+
+      {error && !loading && !externalRecipes && (
+        <p className="recipes-error">{error}</p>
+      )}
+
+      {!loading && !error && (
+        <div className="recipes-grid">
+          {filtered.map((r) => (
+            <Link
+              key={r.slug}
+              to={`/recipe/${r.slug}`}
+              className="card-link"
+              aria-label={r.name}
+            >
+              <RecipeCard recipe={r} />
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

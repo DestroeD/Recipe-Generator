@@ -1,18 +1,128 @@
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./GeneratorPage.css";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
-import profileIcon from "../../assets/icons/user-icon.svg";
 import clockIcon from "../../assets/icons/clock.svg";
 import starIcon from "../../assets/icons/star.svg";
 import starFilledIcon from "../../assets/icons/star-filled.svg";
 
-import recipeImg from "../../assets/images/recipes/recipe1.jpg";
+import fallbackImg from "../../assets/images/image-placeholder.jpg";
+import AuthSwitch from "../../components/AuthSwitch/AuthSwitch";
 
-import { useState } from "react";
+import { getRandomRecipe, isSaved as svcIsSaved, toggleSaved as svcToggleSaved } from "../../services/recipesService";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function GeneratorPage() {
-  const [rating, setRating] = useState(4);
-  const portions = 2;
+  const [recipe, setRecipe] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [isSaved, setIsSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate("/", { replace: true });
+  };
+
+  // натиснули "Розпочати генерацію"
+  const handleGenerate = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const randomRecipe = await getRandomRecipe();
+
+      if (!randomRecipe) {
+        setRecipe(null);
+        setRating(0);
+        setError("Поки немає жодного рецепта для генерації.");
+        return;
+      }
+
+      setRecipe(randomRecipe);
+      setRating(randomRecipe.rating ?? 0);
+    } catch (err) {
+      console.error(err);
+      setError("Сталася помилка під час генерації страви.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openRecipe = () => {
+    if (!recipe) return;
+    if (recipe.slug) {
+      navigate(`/recipe/${recipe.slug}`);
+    }
+  };
+
+  const onKeyOpen = (e) => {
+    if (!recipe) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openRecipe();
+    }
+  };
+
+  useEffect(() => {
+    if (!recipe || !user?.id) {
+      setIsSaved(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const saved = await svcIsSaved(recipe.id, user.id);
+        if (!cancelled) setIsSaved(saved);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [recipe?.id, user?.id]);
+
+
+  const handleToggleSaved = async (e) => {
+    e.stopPropagation();
+
+    if (!recipe) return;
+
+    if (!user?.id) {
+      alert("Щоб зберігати рецепти, потрібно увійти в акаунт.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const newSet = await svcToggleSaved(recipe.id, user.id);
+      setIsSaved(newSet.has(recipe.id));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // значення для відмалювання (якщо рецепт ще не згенерований)
+  const title = recipe?.name || "Натисніть “Розпочати генерацію”";
+  const description =
+    recipe?.shortDescription ||
+    recipe?.description ||
+    "Ми підберемо для вас випадковий рецепт з усіх доступних у базі.";
+  const time = recipe?.time || "—";
+  const portions = recipe?.servings || recipe?.portions || "—";
+  const imageSrc = recipe?.image || fallbackImg;
 
   return (
     <div className="generatorpage">
@@ -22,36 +132,53 @@ export default function GeneratorPage() {
         <main className="generator-section">
           <div className="top-buttons">
             <div className="left-side">
-              <button className="back-btn">←</button>
+              <button
+                className="back-btn"
+                type="button"
+                onClick={handleBack}
+                aria-label="Повернутися на попередню сторінку"
+                title="Назад"
+              >
+                ←
+              </button>
               <h2>Генератор страв</h2>
             </div>
 
             <div className="right-buttons">
-              <img src={profileIcon} alt="profile" className="profile-icon" />
-              <button className="create-btn">+ Створити рецепт</button>
+              <AuthSwitch />
+              <Link to="/create" className="create-btn">
+                + Створити рецепт
+              </Link>
             </div>
           </div>
 
+          {error && <p className="generator-error">{error}</p>}
+
           <section
-            className="featured-card is-clickable"
-            role="button"
-            tabIndex={0}
-            aria-label="Відкрити рецепт: Курячий плов"
+            className={`featured-card ${
+              recipe ? "is-clickable" : "is-disabled"
+            }`}
+            role={recipe ? "link" : "group"}
+            tabIndex={recipe ? 0 : -1}
+            aria-label={
+              recipe
+                ? `Відкрити рецепт: ${title}`
+                : "Спочатку згенеруйте рецепт"
+            }
+            onClick={recipe ? openRecipe : undefined}
+            onKeyDown={recipe ? onKeyOpen : undefined}
           >
             <div className="featured-left">
-              <img src={recipeImg} alt="Курячий плов" />
+              <img src={imageSrc} alt={title} />
             </div>
 
             <div className="featured-right">
-              <h3 className="featured-title">Курячий плов</h3>
-              <p className="featured-desc">
-                Приготувавши плов саме за таким рецептом, рис сто відсотків вийде у вас
-                розсипчастим
-              </p>
+              <h3 className="featured-title">{title}</h3>
+              <p className="featured-desc">{description}</p>
 
               <div className="meta-row">
                 <span className="meta-time">
-                  <img src={clockIcon} alt="" /> 25 хвилин
+                  <img src={clockIcon} alt="" /> {time}
                 </span>
 
                 <div className="rating-line">
@@ -77,27 +204,32 @@ export default function GeneratorPage() {
                     ))}
                   </div>
 
-                  <span className="meta-portions">{portions} порції</span>
+                  <span className="meta-portions">
+                    {portions} {portions === "—" ? "" : "порції"}
+                  </span>
                 </div>
               </div>
 
               <button
                 className="save-outline"
                 onMouseDown={(e) => e.stopPropagation()}
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
+                onClick={handleToggleSaved}
+                disabled={!recipe || saving}
               >
                 <span className="bookmark-ico" aria-hidden="true"></span>
-                Зберегти рецепт
+                {isSaved ? "Збережено" : "Зберегти рецепт"}
               </button>
             </div>
           </section>
 
           <div className="cta-wrap">
-            <button className="start-cta">
+            <button
+              className="start-cta"
+              onClick={handleGenerate}
+              disabled={loading}
+            >
               <span className="start-ico" aria-hidden="true"></span>
-              Розпочати генерацію
+              {loading ? "Генеруємо..." : "Розпочати генерацію"}
             </button>
           </div>
         </main>

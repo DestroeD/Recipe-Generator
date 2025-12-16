@@ -25,3 +25,9 @@ dist-ssr
 node_modules/
 dist/
 .vscode/
+
+# coverage / nyc
+coverage
+.nyc_output
+coverage-final.json
+coverage-summary.json

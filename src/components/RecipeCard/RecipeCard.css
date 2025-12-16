@@ -113,7 +113,7 @@
 
 .save-btn.saved {
   background: #a3c4ab;
-  cursor: default;
+  cursor: pointer;
 }
 
 .save-btn.saved:hover {

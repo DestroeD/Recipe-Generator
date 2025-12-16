@@ -46,7 +46,7 @@
   display: flex;
   gap: 12px;
 }
-.ghost-btn,
+
 .create-btn2 {
   height: 40px;
   padding: 0 15px;
@@ -54,16 +54,6 @@
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
-}
-
-.ghost-btn {
-  border: 1px solid #ccc;
-  background: #f9f9f9;
-  color: #333;
-}
-
-.ghost-btn:hover {
-  background: #f0f0f0;
 }
 
 .create-btn2 {
@@ -131,7 +121,11 @@
 
 .save-row {
   margin-top: 14px;
+  display: flex;              /* ⭐ ДОДАНО */
+  align-items: center;        /* ⭐ ДОДАНО */
+  gap: 10px;                  /* ⭐ ДОДАНО – відстань між кнопками */
 }
+
 .save-button {
   display: inline-flex;
   align-items: center;
@@ -150,6 +144,24 @@
 }
 .save-button:hover {
   background: #e9f7ea;
+}
+
+.delete-own-recipe-btn {
+  display: inline-flex;             /* як і save-button */
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1.5px solid #f5c2c2;      /* блідо-червона рамка */
+  background: #fff5f5;              /* світло-червоний фон */
+  color: #c62828;                   /* червоний текст */
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+}
+
+.delete-own-recipe-btn:hover {
+  background: #ffe1e1;
 }
 
 .content-grid {
@@ -267,6 +279,25 @@
   line-height: 1.45;
 }
 
+.steps .step-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.steps .step-row p {
+  margin: 0;
+}
+
+.steps .step-photo-preview {
+  width: 40%;
+  max-width: 260px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
 @media (max-width: 1100px) {
   .header-grid,
   .content-grid {
@@ -326,7 +357,7 @@ html, body {
   padding-right: 8px;
 }
 
-/* для краси — прихований скролбар */
+/* прихований скролбар */
 .ingredients::-webkit-scrollbar,
 .steps::-webkit-scrollbar {
   width: 6px;

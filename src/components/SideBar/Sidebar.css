@@ -21,6 +21,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  text-decoration: none;
 }
 
 .logo {
@@ -58,7 +59,7 @@
   gap: 14px;
 }
 
-.nav li {
+.nav-link {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -69,9 +70,10 @@
   border-radius: 10px;
   cursor: pointer;
   transition: background 0.25s ease, color 0.25s ease;
+  text-decoration: none;
 }
 
-.nav li:hover {
+.nav-link:hover {
   background: rgba(109, 166, 122, 0.1);
   color: #4caf50;
 }

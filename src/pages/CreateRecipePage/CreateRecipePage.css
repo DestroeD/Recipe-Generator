@@ -8,6 +8,7 @@
   border: 1.5px dashed #ccc;
   background: #f5f5ef;
   text-align: center;
+  cursor: pointer;
 }
 .upload-placeholder img {
   width: 48px;
@@ -24,6 +25,31 @@
 .upload-placeholder small {
   font-size: 12px;
   color: #777;
+}
+
+.upload-placeholder .main-photo-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 1;
+  margin: 0;
+  border-radius: 14px;
+}
+
+.photo-upload .step-photo-icon {
+  width: 38px;
+  opacity: 0.7;
+  margin-bottom: 6px;
+  object-fit: contain;
+}
+
+.photo-upload .step-photo-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 1;
+  margin: 0;
+  border-radius: 12px;
 }
 
 /* Інпути для редагування */
@@ -61,6 +87,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
   gap: 8px;
   height: 40px;
   padding: 0 18px;
@@ -112,9 +139,29 @@
   width: 70%;
 }
 
+.remove-btn {
+  background: none;
+  border: none;
+  font-size: 36px;
+  font-weight: 300;
+  color: #1e1e1e;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.1s ease;
+  margin-left: 8px;
+  position: relative;
+  top: 4px;
+}
+
+.remove-btn:hover {
+  color: #6DA67A;
+  transform: scale(1.1);
+}
+
 .portion-input {
   margin-left: 10px;
 }
+
+
 
 /* Кроки */
 .time-input {
@@ -171,12 +218,7 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-}
-
-.photo-upload img {
-  width: 38px;
-  opacity: 0.7;
-  margin-bottom: 6px;
+  cursor: pointer;
 }
 
 .photo-upload p {
